@@ -560,6 +560,157 @@ body {
   border-color: rgba(227, 182, 92, 0.55);
 }
 
+/* --- Reel gallery ------------------------------------------------------
+   Phone-shaped cutouts in a pixel frame. Sized so five sit across a desktop
+   row and scroll sideways below that. */
+.reel-tabs {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  margin: 36px 0 18px;
+}
+.reel-tab {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 11px 18px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.92rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: rgba(225, 224, 204, 0.6);
+  background: rgba(9, 16, 24, 0.5);
+  border: 2px solid rgba(225, 224, 204, 0.14);
+  transition: color 120ms steps(3, end), border-color 120ms steps(3, end), background 120ms steps(3, end);
+}
+.reel-tab:hover { color: var(--ink); border-color: rgba(227, 182, 92, 0.45); }
+.reel-tab.is-active {
+  color: #10202E;
+  background: var(--gold);
+  border-color: var(--gold);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.45);
+}
+.reel-tab__tag { opacity: 0.55; font-size: 0.78rem; }
+.reel-tab.is-active .reel-tab__tag { opacity: 0.7; }
+
+.reel-blurb {
+  margin: 0 0 26px;
+  max-width: 62ch;
+  font-size: 0.92rem; line-height: 1.6;
+  color: rgba(225, 224, 204, 0.5);
+}
+
+.reel-row {
+  display: flex;
+  gap: 18px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 8px;
+}
+.reel {
+  flex: 0 0 auto;
+  width: 208px;
+  scroll-snap-align: center;
+  /* `backwards`, not `both`: the END state then comes from the element's own
+     styles (visible) rather than from the keyframe. Anything that skips or
+     never finishes the animation still lands on a visible tile — content must
+     not depend on an animation completing to be seen. */
+  opacity: 1;
+  animation: reel-in 420ms steps(6, end) backwards;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes reel-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reel { animation: none; }
+}
+
+.reel__frame {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  cursor: pointer;
+  background: #0E1822;
+  border: 3px solid rgba(227, 182, 92, 0.4);
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.5);
+  transition: border-color 120ms steps(3, end), transform 120ms steps(3, end);
+}
+.reel__frame:hover { border-color: var(--gold); transform: translate(-2px, -2px); }
+.reel__video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Scanline comb over the footage so video and pixel art share a texture. */
+.reel__scan {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(to bottom, rgba(0,0,0,0.22) 0 1px, transparent 1px 3px);
+}
+
+.reel__play {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 46px; height: 46px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem;
+  color: #10202E;
+  background: var(--gold);
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.5);
+  transition: opacity 140ms steps(3, end);
+}
+.reel__play.is-playing { opacity: 0; }
+.reel__frame:hover .reel__play.is-playing { opacity: 1; }
+
+/* A slot with no file yet reads as intentional, not broken. */
+.reel__empty {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(225, 224, 204, 0.34);
+  background:
+    repeating-linear-gradient(45deg, rgba(227,182,92,0.05) 0 8px, transparent 8px 16px),
+    #0E1822;
+}
+.reel__empty-mark { font-size: 1.6rem; color: rgba(227, 182, 92, 0.4); }
+
+.reel__stat {
+  margin-top: 12px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.74rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--gold);
+}
+.reel__title { margin-top: 4px; font-size: 0.9rem; line-height: 1.35; color: rgba(225, 224, 204, 0.82); }
+
+/* The ask tile closes every track: if none of these are your business, talk
+   to us instead of leaving. */
+.reel__frame--ask {
+  display: flex; align-items: center; justify-content: center;
+  padding: 18px;
+  cursor: default;
+  background:
+    repeating-linear-gradient(45deg, rgba(227,182,92,0.06) 0 10px, transparent 10px 20px),
+    #131F2B;
+  border-style: dashed;
+}
+.reel__ask-body { position: relative; z-index: 1; text-align: center; }
+.reel__ask-title {
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 1.05rem; line-height: 1.2; color: var(--ink); margin-bottom: 10px;
+}
+.reel__ask-copy { font-size: 0.78rem; line-height: 1.5; color: rgba(225, 224, 204, 0.55); margin: 0 0 16px; }
+.reel__ask-btn {
+  width: 100%;
+  padding: 11px 12px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: #10202E;
+  background: var(--gold);
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.45);
+  transition: transform 120ms steps(3, end);
+}
+.reel__ask-btn:hover { transform: translate(-2px, -2px); }
+
+@media (max-width: 640px) {
+  .reel { width: 168px; }
+}
+
 /* --- The value ladder ---------------------------------------------------
    Without this the tiers read as three unrelated feature lists. This says
    what the extra money actually buys. */
