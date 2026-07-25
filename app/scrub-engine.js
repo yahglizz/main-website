@@ -241,17 +241,35 @@ function mountScrollWorld(container, config) {
       }
     }
 
+    // ---- copy phase --------------------------------------------------------
+    // A leg FLIES INTO its scene, so the scene is only fully framed at the END
+    // of its segment — not the middle. Peaking the copy mid-segment (which is
+    // right for architecture B, where the dive lands you mid-way) puts the card
+    // at zero exactly when the district fills the screen. So the card is phased
+    // to ARRIVAL: it rises through the approach, is full when you get there,
+    // holds briefly across the seam (the next leg opens on this same frame),
+    // then clears before the next card starts its own rise.
+    const RISE_IN = 0.50, RISE_FULL = 0.92;   // in segment-widths
+    const HOLD_TO = 1.05, GONE_BY = 1.30;     // >1 = into the following segment
     for (let i = 0; i < N; i++) {
       const seg = SECTIONS[i]._seg;
-      const pr = clamp((y - seg.start) / (seg.end - seg.start), 0, 1);
-      const before = y < seg.start, after = y > seg.end;
-      let cop;
-      if (i === 0) cop = after ? 0 : smooth(1 - pr / 0.62);            // greets on landing
-      else if (i === N - 1) cop = before ? 0 : smooth(pr / 0.4);       // holds CTA at the end
-      else cop = (before || after) ? 0 : smooth(1 - Math.abs(pr - 0.5) / 0.5);
+      const u = (y - seg.start) / (seg.end - seg.start);   // unclamped on purpose
+      let cop, drift;
+      if (i === 0) {
+        // The opening card greets on landing instead of on arrival — at scroll
+        // zero there is no approach yet, and this is the page's first read.
+        cop = (y > seg.end) ? 0 : smooth(1 - clamp(u) / 0.62);
+        drift = (0.5 - clamp(u)) * 4;
+      } else {
+        const rise = smooth((u - RISE_IN) / (RISE_FULL - RISE_IN));
+        // The last card is the CTA — once it has arrived it stays put.
+        const fall = (i === N - 1) ? 1 : smooth(1 - (u - HOLD_TO) / (GONE_BY - HOLD_TO));
+        cop = clamp(rise * fall);
+        drift = (1 - clamp(u, 0, 1.2)) * 3;   // settles as the district lands
+      }
       const c = copies[i];
       c.style.opacity = cop;
-      c.style.transform = reduce ? 'none' : `translateY(${(0.5 - pr) * 4}vh)`;
+      c.style.transform = reduce ? 'none' : `translateY(${drift}vh)`;
       c.style.pointerEvents = cop > 0.5 ? 'auto' : 'none';
     }
 

@@ -146,8 +146,50 @@ body {
   color: #10202E !important;
   background: var(--sw-accent) !important;
 }
-/* Copy sits over bright cream artwork — give it a readable scrim. */
-.sw-root .sw-copy { text-shadow: 0 2px 10px rgba(16, 32, 46, 0.75); }
+/* --- The department panel ---------------------------------------------
+   The section copy is the district's info pop-up, so it gets a real sprite
+   panel: slate plate, gold rule, stepped corners, hard offset shadow. It
+   carries its own background, which is what makes it readable over the
+   bright cream artwork. */
+.sw-root .sw-copy {
+  padding: clamp(20px, 2vw, 30px) clamp(22px, 2.2vw, 34px) clamp(24px, 2.4vw, 32px);
+  background: rgba(23, 35, 48, 0.9);
+  border: 2px solid rgba(227, 182, 92, 0.38);
+  box-shadow: 6px 6px 0 rgba(9, 16, 24, 0.55);
+  backdrop-filter: blur(2px);
+  /* No clip-path notch here: clip-path would clip the offset shadow away too,
+     and the hard shadow is the stronger pixel cue. Corners are already squared
+     by the .sw-root radius reset. */
+  text-shadow: 0 2px 10px rgba(16, 32, 46, 0.75);
+}
+
+/* A lit rule across the top edge — the panel reads as powered-on. */
+.sw-root .sw-copy::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), rgba(227, 182, 92, 0.15));
+}
+
+/* The panel supplies its own contrast now, so the layer-wide scrim can back
+   right off — at full strength it dimmed a third of the artwork. */
+.sw-root .sw-copylayer::before {
+  background: linear-gradient(90deg,
+    rgba(27, 40, 54, 0.55) 0%,
+    rgba(27, 40, 54, 0.22) 45%,
+    transparent 100%) !important;
+}
+
+/* The counter becomes the panel's tab — it labels the plate. */
+.sw-root .sw-copy__num {
+  display: inline-block;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  color: var(--gold);
+  background: rgba(227, 182, 92, 0.14);
+  border: 2px solid rgba(227, 182, 92, 0.3);
+  padding: 2px 9px;
+}
 
 /* --- The centred pixel wordmark ---------------------------------------
    Sits above the scenes (stage is z-index 10) and below the topbar (50), so
