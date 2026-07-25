@@ -1,12 +1,926 @@
 :root {
   color-scheme: dark;
+  --void: #1B2836;
+  --surface: #223546;
+  --card: #2C4157;
+  --ink: #E1E0CC;
+  --gold: #E3B65C;
 }
-html, body { background: #000; }
+html, body { background: var(--void); }
 body {
   font-family: 'Almarai', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Oxygen', 'Ubuntu', Cantarell, sans-serif;
-  color: #E1E0CC;
+  color: var(--ink);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+/* ============================================================
+   PIXEL THEME
+   The art is 16-bit pixel art, so the chrome matches it:
+   hard edges, no blur, stepped shadows, crisp upscaling.
+   ============================================================ */
+
+/* Pixel art must never be smoothed when scaled up. */
+.pixelated {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* The pixel face has no real italic — synthesized oblique looks broken,
+   so neutralise it everywhere `font-serif italic` was used. */
+.font-serif { font-style: normal !important; }
+
+/* Blanket radius knock-down: pixel UI is square. One rule instead of
+   editing every rounded-* utility across eight components. */
+[class*="rounded"] { border-radius: 2px !important; }
+
+/* Hard offset shadow instead of a soft blur. */
+.shadow-pixel { box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.45); }
+.shadow-pixel-sm { box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.45); }
+
+/* Chunky border that reads as a sprite outline. */
+.border-pixel { border: 2px solid rgba(225, 224, 204, 0.22); }
+
+/* Every solid black surface becomes the art's slate void, so the pixel
+   plates sit on the same ground as the page. One rule instead of
+   rewriting ~40 `bg-black` usages across the components.
+   Translucent `bg-black/NN` scrims are left alone — they sit over
+   artwork, where a near-black veil is still what we want. */
+.bg-black { background-color: var(--void) !important; }
+
+/* --- Notched corners -------------------------------------------------
+   Real pixel UI doesn't round corners, it steps them. clip-path cuts a
+   4px notch out of each corner so buttons and cards read as sprites
+   rather than CSS. */
+.pixel-notch {
+  clip-path: polygon(
+    4px 0, calc(100% - 4px) 0, 100% 4px, 100% calc(100% - 4px),
+    calc(100% - 4px) 100%, 4px 100%, 0 calc(100% - 4px), 0 4px
+  );
+  border-radius: 0 !important;
+}
+
+/* --- Pixel scrollbar -------------------------------------------------- */
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: var(--void); }
+::-webkit-scrollbar-thumb {
+  background: var(--gold);
+  border: 3px solid var(--void);   /* stepped inset, no radius */
+}
+::-webkit-scrollbar-thumb:hover { background: var(--ink); }
+
+/* --- Scanlines --------------------------------------------------------
+   A 1-in-3px darkening comb. Very low alpha — reads as CRT texture at a
+   glance, never as stripes. Pointer-events off; purely decorative. */
+.scanlines::after {
+  content: '';
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.13) 0 1px,
+    transparent 1px 3px
+  );
+  mix-blend-mode: multiply;
+}
+
+/* --- Blinking block caret --------------------------------------------- */
+@keyframes pixel-blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+.pixel-caret {
+  display: inline-block;
+  width: 0.55em; height: 1em;
+  background: var(--gold);
+  vertical-align: -0.12em;
+  animation: pixel-blink 1s steps(1, end) infinite;
+}
+
+/* --- Stepped hover lift ----------------------------------------------
+   Snaps in whole pixels (steps) instead of gliding — motion should be
+   quantised like the art. */
+.pixel-lift { transition: transform 120ms steps(3, end), box-shadow 120ms steps(3, end); }
+.pixel-lift:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.5); }
+
+/* --- scroll-world theme ----------------------------------------------
+   The engine wraps its own tokens in @layer sw, so a plain page-level
+   block outranks them without specificity hacks. Dark slate to match the
+   rest of the site; the clips are bright cream/gold so they carry the
+   colour and the chrome stays quiet. */
+.sw-root {
+  --sw-bg: #1B2836;
+  --sw-ink: #E1E0CC;
+  --sw-ink-soft: rgba(225, 224, 204, 0.62);
+  --sw-accent: #E3B65C;
+  --sw-font-display: 'Pixelify Sans', ui-monospace, monospace;
+  --sw-font-body: 'Almarai', system-ui, sans-serif;
+}
+
+/* The world's own chrome is pixel-styled too: square corners, hard edges. */
+.sw-root [class*="sw-"] { border-radius: 0 !important; }
+
+/* The engine hardcodes white scrims (`color-mix(#fff …)`) on a few surfaces
+   because its stock theme is light. Those don't follow --sw-bg, so on a dark
+   theme they have to be overridden by hand. */
+.sw-root .sw-nav,
+.sw-root .sw-route__label {
+  background: rgba(27, 40, 54, 0.82) !important;
+  border: 2px solid rgba(227, 182, 92, 0.28) !important;
+  color: var(--sw-ink) !important;
+}
+.sw-root .sw-copy__tags li {
+  background: rgba(227, 182, 92, 0.12) !important;
+  border: 2px solid rgba(227, 182, 92, 0.34) !important;
+  color: var(--sw-accent) !important;
+}
+.sw-root .sw-nav { gap: 2px !important; padding: 4px !important; }
+.sw-root .sw-nav__item {
+  padding: 6px 12px !important;
+  border: 2px solid transparent !important;
+  letter-spacing: 0.02em;
+}
+.sw-root .sw-nav__item + .sw-nav__item { border-left: 2px solid rgba(227, 182, 92, 0.18) !important; }
+.sw-root .sw-nav__item.is-active { color: #10202E !important; }
+.sw-root .sw-topcta,
+.sw-root .sw-btn--primary {
+  color: #10202E !important;
+  background: var(--sw-accent) !important;
+}
+/* --- The department panel ---------------------------------------------
+   The section copy is the district's info pop-up, so it gets a real sprite
+   panel: slate plate, gold rule, stepped corners, hard offset shadow. It
+   carries its own background, which is what makes it readable over the
+   bright cream artwork. */
+.sw-root .sw-copy {
+  padding: clamp(20px, 2vw, 30px) clamp(22px, 2.2vw, 34px) clamp(24px, 2.4vw, 32px);
+  background: rgba(23, 35, 48, 0.9);
+  border: 2px solid rgba(227, 182, 92, 0.38);
+  box-shadow: 6px 6px 0 rgba(9, 16, 24, 0.55);
+  backdrop-filter: blur(2px);
+  /* No clip-path notch here: clip-path would clip the offset shadow away too,
+     and the hard shadow is the stronger pixel cue. Corners are already squared
+     by the .sw-root radius reset. */
+  text-shadow: 0 2px 10px rgba(16, 32, 46, 0.75);
+}
+
+/* A lit rule across the top edge — the panel reads as powered-on. */
+.sw-root .sw-copy::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), rgba(227, 182, 92, 0.15));
+}
+
+/* The panel supplies its own contrast now, so the layer-wide scrim can back
+   right off — at full strength it dimmed a third of the artwork. */
+.sw-root .sw-copylayer::before {
+  background: linear-gradient(90deg,
+    rgba(27, 40, 54, 0.55) 0%,
+    rgba(27, 40, 54, 0.22) 45%,
+    transparent 100%) !important;
+}
+
+/* The counter becomes the panel's tab — it labels the plate. */
+.sw-root .sw-copy__num {
+  display: inline-block;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  color: var(--gold);
+  background: rgba(227, 182, 92, 0.14);
+  border: 2px solid rgba(227, 182, 92, 0.3);
+  padding: 2px 9px;
+}
+
+/* --- The centred pixel wordmark ---------------------------------------
+   Sits above the scenes (stage is z-index 10) and below the topbar (50), so
+   it never fights the nav. Never interactive — the copy and CTAs own clicks. */
+.cf-wordmark {
+  position: fixed;
+  /* Above centre: the section copy owns the lower-left third and the route
+     rail owns the right edge — this keeps clear of both. */
+  top: 43%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 25;
+  pointer-events: none;
+  text-align: center;
+  width: max-content;
+  max-width: 74vw;
+  will-change: transform, opacity;
+}
+
+.cf-wordmark__line {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  gap: 0 0.42em;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-weight: 700;
+  font-size: clamp(1.7rem, 6.2vw, 4.6rem);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: #F4EFDD;
+}
+
+.cf-wordmark__word { display: inline-flex; }
+
+/* Each glyph drops in on a stepped curve — motion quantised like the art —
+   then keeps a slow pixel bob so the title never feels like flat UI. */
+.cf-wordmark__ch {
+  display: inline-block;
+  opacity: 0;
+  /* Hard offset shadow + a soft halo: readable over both bright cloud and
+     dark slate without a scrim box. */
+  text-shadow:
+    3px 3px 0 rgba(16, 32, 46, 0.85),
+    0 0 22px rgba(227, 182, 92, 0.45);
+  animation:
+    cf-wm-drop 380ms steps(5, end) both,
+    cf-wm-bob 3.6s steps(4, end) infinite;
+  /* --d is the per-glyph stagger, set inline by world.js. The bob waits for
+     the whole line to have landed before it starts breathing. */
+  animation-delay: var(--d, 0ms), calc(var(--d, 0ms) + 900ms);
+}
+
+@keyframes cf-wm-drop {
+  from { opacity: 0; transform: translateY(-0.45em) scale(1.15); }
+  60%  { opacity: 1; }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes cf-wm-bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-3px); }
+}
+
+/* Blinking block caret, same beat as the pixel caret used elsewhere. */
+.cf-wordmark__caret {
+  display: inline-block;
+  width: 0.42em;
+  height: 0.86em;
+  background: var(--gold);
+  box-shadow: 3px 3px 0 rgba(16, 32, 46, 0.85);
+  opacity: 0;
+  animation:
+    cf-wm-caret-in 1ms steps(1, end) both,
+    pixel-blink 1s steps(1, end) infinite;
+  animation-delay: var(--d, 0ms), var(--d, 0ms);
+}
+@keyframes cf-wm-caret-in { to { opacity: 1; } }
+
+.cf-wordmark__sub {
+  margin-top: 0.9rem;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: clamp(0.72rem, 1.8vw, 1rem);
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-shadow: 2px 2px 0 rgba(16, 32, 46, 0.9);
+  opacity: 0;
+  animation: cf-wm-fade 700ms steps(6, end) both;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes cf-wm-fade { from { opacity: 0; } to { opacity: 0.92; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .cf-wordmark__ch,
+  .cf-wordmark__sub,
+  .cf-wordmark__caret { animation: none; opacity: 1; transform: none; }
+  .cf-wordmark__sub { opacity: 0.92; }
+}
+
+/* --- Plan deck controls -----------------------------------------------
+   Square, chunky, stepped. The deck is the one place on the page where the
+   visitor is being asked to do something with their hands, so the controls
+   are deliberately loud. */
+.deck-arrow {
+  width: 40px; height: 40px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--gold);
+  background: rgba(227, 182, 92, 0.1);
+  border: 2px solid rgba(227, 182, 92, 0.35);
+  box-shadow: 3px 3px 0 rgba(9, 16, 24, 0.5);
+  border-radius: 0 !important;
+  transition: transform 120ms steps(3, end), background 120ms steps(3, end), box-shadow 120ms steps(3, end);
+}
+.deck-arrow:hover:not(:disabled) {
+  background: var(--gold);
+  color: #10202E;
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 rgba(9, 16, 24, 0.6);
+}
+.deck-arrow:active:not(:disabled) { transform: translate(1px, 1px); box-shadow: 1px 1px 0 rgba(9, 16, 24, 0.6); }
+.deck-arrow:disabled { opacity: 0.28; cursor: default; }
+
+.deck-count {
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  color: rgba(227, 182, 92, 0.75);
+}
+
+.deck-hint {
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(225, 224, 204, 0.42);
+  display: none;
+}
+@media (min-width: 640px) { .deck-hint { display: inline-flex; align-items: center; } }
+
+/* Dots are pixel blocks; the active one stretches into a bar. */
+.deck-dot {
+  width: 10px; height: 10px;
+  background: rgba(225, 224, 204, 0.22);
+  border: 2px solid transparent;
+  border-radius: 0 !important;
+  transition: width 160ms steps(4, end), background 160ms steps(4, end);
+}
+.deck-dot:hover { background: rgba(225, 224, 204, 0.45); }
+.deck-dot.is-active { width: 26px; background: var(--gold); }
+
+/* The front card of the deck gets a lit plate edge. */
+.deck-card-active {
+  box-shadow: 0 0 0 2px rgba(227, 182, 92, 0.55), 6px 6px 0 rgba(9, 16, 24, 0.45);
+}
+
+/* Dragging a card shouldn't select its text. */
+[data-track] { user-select: none; -webkit-user-select: none; }
+
+/* --- Brand mark -------------------------------------------------------
+   The engine ships a gradient bar as a placeholder logo. Replaced with the
+   real ClientForge emblem — a winged, haloed anvil, pixel-drawn in the same
+   gold and slate as the world. Rendered `pixelated` so it stays crisp. */
+.sw-root .sw-brand__mark {
+  width: 30px; height: 30px;
+  background: url('assets/logo/clientforge-mark.png') center / contain no-repeat !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  image-rendering: pixelated;
+}
+.sw-root .sw-brand__name { letter-spacing: 0.04em; }
+
+/* --- Scroll cue -------------------------------------------------------
+   The engine's stock hint is low-contrast type with no plate, which vanishes
+   against bright cloud art. It gets its own slate plate, the pixel face, and a
+   bouncing arrow — it's the one instruction the page depends on. */
+.sw-root .sw-hint {
+  bottom: 34px;
+  gap: 12px;
+  padding: 12px 22px 14px;
+  background: rgba(16, 27, 38, 0.86);
+  border: 2px solid rgba(227, 182, 92, 0.42);
+  box-shadow: 5px 5px 0 rgba(9, 16, 24, 0.5);
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  text-transform: none;
+  color: var(--ink);
+}
+/* The engine's own marker element becomes the arrow. */
+.sw-root .sw-hint i {
+  width: 0; height: 0;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-top: 12px solid var(--gold);
+  background: none;
+  animation: hint-drop 1.5s steps(3, end) infinite;
+}
+@keyframes hint-drop {
+  0%, 100% { transform: translateY(0); opacity: 0.75; }
+  50%      { transform: translateY(6px); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sw-root .sw-hint i { animation: none; }
+}
+
+/* --- District label ---------------------------------------------------
+   The district name is the point of each scene, so it leads: bigger than the
+   headline's supporting role, gold, and sitting on its own rule. */
+.sw-root .sw-copy__eyebrow {
+  margin-top: 16px;
+  font-size: clamp(1.05rem, 1.7vw, 1.6rem);
+  letter-spacing: 0.2em;
+  line-height: 1.1;
+  color: var(--gold);
+  text-shadow: 2px 2px 0 rgba(9, 16, 24, 0.9);
+}
+.sw-root .sw-copy__eyebrow::after {
+  content: '';
+  display: block;
+  width: 3.2em;
+  height: 3px;
+  margin-top: 10px;
+  background: var(--gold);
+}
+.sw-root .sw-copy__title {
+  margin-top: 14px;
+  font-size: clamp(1.6rem, 3.2vw, 2.6rem);   /* the label leads, this supports */
+}
+
+/* --- Plan deck --------------------------------------------------------- */
+.deck-arrow {
+  width: 40px; height: 40px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--gold);
+  background: rgba(227, 182, 92, 0.1);
+  border: 2px solid rgba(227, 182, 92, 0.34);
+  box-shadow: 3px 3px 0 rgba(9, 16, 24, 0.5);
+  transition: transform 120ms steps(3, end), background 120ms steps(3, end);
+}
+.deck-arrow:hover:not(:disabled) { background: rgba(227, 182, 92, 0.22); transform: translate(-2px, -2px); }
+.deck-arrow:disabled { opacity: 0.28; }
+
+.deck-count,
+.deck-hint {
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  color: rgba(225, 224, 204, 0.5);
+  text-transform: uppercase;
+}
+.deck-count { color: var(--gold); }
+.deck-hint { display: inline-flex; align-items: center; }
+.deck-hint .pixel-caret { width: 0.4em; height: 0.9em; }
+
+.deck-dot {
+  width: 12px; height: 12px;
+  background: rgba(225, 224, 204, 0.22);
+  border: 2px solid transparent;
+  transition: width 140ms steps(3, end), background 140ms steps(3, end);
+}
+.deck-dot.is-active { width: 30px; background: var(--gold); }
+
+/* The front card of the deck gets a lit edge so it's obvious which one the
+   controls act on. */
+.deck-card-active { box-shadow: 0 0 0 2px var(--gold), 6px 6px 0 rgba(9, 16, 24, 0.5); }
+
+/* --- Swipe to confirm --------------------------------------------------
+   Drag the knob across, or tap anywhere on the track for the same result. */
+.swipe-track {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 56px; padding: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  background: rgba(9, 16, 24, 0.5);
+  border: 2px solid rgba(225, 224, 204, 0.14);
+  transition: border-color 140ms steps(3, end), background 140ms steps(3, end);
+}
+.swipe-track--featured {
+  background: rgba(227, 182, 92, 0.08);
+  border-color: rgba(227, 182, 92, 0.4);
+}
+.swipe-track:hover { border-color: rgba(227, 182, 92, 0.65); }
+.swipe-track.is-done { border-color: var(--gold); background: rgba(227, 182, 92, 0.18); }
+/* While dragging, drop the easing so the handle tracks the finger exactly. */
+.swipe-track.is-dragging .swipe-handle,
+.swipe-track.is-dragging .swipe-fill { transition: none; }
+
+.swipe-fill {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  background: rgba(227, 182, 92, 0.2);
+  pointer-events: none;
+  transition: width 240ms steps(6, end);
+}
+.swipe-label {
+  position: relative;
+  padding-left: 34px;                 /* clear of the knob at rest */
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(225, 224, 204, 0.82);
+  pointer-events: none;
+  animation: swipe-nudge 2.4s steps(4, end) infinite;
+}
+.swipe-track.is-done .swipe-label { color: var(--gold); animation: none; }
+@keyframes swipe-nudge {
+  0%, 70%, 100% { transform: translateX(0); }
+  80%           { transform: translateX(4px); }
+}
+
+.swipe-handle {
+  position: absolute; left: 4px; top: 4px;
+  width: 48px; height: calc(100% - 8px);
+  display: flex; align-items: center; justify-content: center;
+  background: var(--gold);
+  color: #10202E;
+  box-shadow: 3px 0 0 rgba(9, 16, 24, 0.45);
+  cursor: grab;
+  touch-action: pan-y;                /* vertical page scroll still works */
+  transition: transform 240ms steps(6, end);
+}
+.swipe-track.is-dragging .swipe-handle { cursor: grabbing; }
+
+/* Chevrons pointing the way, marching toward the far end. */
+.swipe-chevrons {
+  position: absolute; right: 14px;
+  display: flex; gap: 5px;
+  pointer-events: none;
+}
+.swipe-chevrons i {
+  width: 7px; height: 7px;
+  border-right: 3px solid rgba(227, 182, 92, 0.8);
+  border-top: 3px solid rgba(227, 182, 92, 0.8);
+  transform: rotate(45deg);
+  animation: swipe-march 1.5s steps(2, end) infinite;
+}
+.swipe-chevrons i:nth-child(2) { animation-delay: 0.18s; }
+.swipe-chevrons i:nth-child(3) { animation-delay: 0.36s; }
+.swipe-track.is-done .swipe-chevrons { opacity: 0; }
+@keyframes swipe-march {
+  0%, 100% { opacity: 0.25; }
+  40%      { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .swipe-label { animation: none; }
+}
+
+/* --- Showcase button ---------------------------------------------------
+   Quiet on purpose: the swipe is the primary action, this is the escape
+   hatch for people who want proof before they commit. */
+.showcase-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 11px 14px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  color: rgba(225, 224, 204, 0.68);
+  background: transparent;
+  border: 2px solid rgba(225, 224, 204, 0.16);
+  transition: color 120ms steps(3, end), border-color 120ms steps(3, end);
+}
+.showcase-btn:hover {
+  color: var(--gold);
+  border-color: rgba(227, 182, 92, 0.55);
+}
+
+/* --- Reel gallery ------------------------------------------------------
+   Phone-shaped cutouts in a pixel frame. Sized so five sit across a desktop
+   row and scroll sideways below that. */
+.reel-tabs {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  margin: 36px 0 18px;
+}
+.reel-tab {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 11px 18px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.92rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: rgba(225, 224, 204, 0.6);
+  background: rgba(9, 16, 24, 0.5);
+  border: 2px solid rgba(225, 224, 204, 0.14);
+  transition: color 120ms steps(3, end), border-color 120ms steps(3, end), background 120ms steps(3, end);
+}
+.reel-tab:hover { color: var(--ink); border-color: rgba(227, 182, 92, 0.45); }
+.reel-tab.is-active {
+  color: #10202E;
+  background: var(--gold);
+  border-color: var(--gold);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.45);
+}
+.reel-tab__tag { opacity: 0.55; font-size: 0.78rem; }
+.reel-tab.is-active .reel-tab__tag { opacity: 0.7; }
+
+.reel-blurb {
+  margin: 0 0 26px;
+  max-width: 62ch;
+  font-size: 0.92rem; line-height: 1.6;
+  color: rgba(225, 224, 204, 0.5);
+}
+
+.reel-row {
+  display: flex;
+  gap: 18px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 8px;
+}
+.reel {
+  flex: 0 0 auto;
+  width: 208px;
+  scroll-snap-align: center;
+  /* `backwards`, not `both`: the END state then comes from the element's own
+     styles (visible) rather than from the keyframe. Anything that skips or
+     never finishes the animation still lands on a visible tile — content must
+     not depend on an animation completing to be seen. */
+  opacity: 1;
+  animation: reel-in 420ms steps(6, end) backwards;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes reel-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reel { animation: none; }
+}
+
+.reel__frame {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  cursor: pointer;
+  background: #0E1822;
+  border: 3px solid rgba(227, 182, 92, 0.4);
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.5);
+  transition: border-color 120ms steps(3, end), transform 120ms steps(3, end);
+}
+.reel__frame:hover { border-color: var(--gold); transform: translate(-2px, -2px); }
+.reel__video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Scanline comb over the footage so video and pixel art share a texture. */
+.reel__scan {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(to bottom, rgba(0,0,0,0.22) 0 1px, transparent 1px 3px);
+}
+
+.reel__play {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 46px; height: 46px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem;
+  color: #10202E;
+  background: var(--gold);
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.5);
+  transition: opacity 140ms steps(3, end);
+}
+.reel__play.is-playing { opacity: 0; }
+.reel__frame:hover .reel__play.is-playing { opacity: 1; }
+
+/* A slot with no file yet reads as intentional, not broken. */
+.reel__empty {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(225, 224, 204, 0.34);
+  background:
+    repeating-linear-gradient(45deg, rgba(227,182,92,0.05) 0 8px, transparent 8px 16px),
+    #0E1822;
+}
+.reel__empty-mark { font-size: 1.6rem; color: rgba(227, 182, 92, 0.4); }
+
+.reel__stat {
+  margin-top: 12px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.74rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--gold);
+}
+.reel__title { margin-top: 4px; font-size: 0.9rem; line-height: 1.35; color: rgba(225, 224, 204, 0.82); }
+
+/* The ask tile closes every track: if none of these are your business, talk
+   to us instead of leaving. */
+.reel__frame--ask {
+  display: flex; align-items: center; justify-content: center;
+  padding: 18px;
+  cursor: default;
+  background:
+    repeating-linear-gradient(45deg, rgba(227,182,92,0.06) 0 10px, transparent 10px 20px),
+    #131F2B;
+  border-style: dashed;
+}
+.reel__ask-body { position: relative; z-index: 1; text-align: center; }
+.reel__ask-title {
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 1.05rem; line-height: 1.2; color: var(--ink); margin-bottom: 10px;
+}
+.reel__ask-copy { font-size: 0.78rem; line-height: 1.5; color: rgba(225, 224, 204, 0.55); margin: 0 0 16px; }
+.reel__ask-btn {
+  width: 100%;
+  padding: 11px 12px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: #10202E;
+  background: var(--gold);
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.45);
+  transition: transform 120ms steps(3, end);
+}
+.reel__ask-btn:hover { transform: translate(-2px, -2px); }
+
+@media (max-width: 640px) {
+  .reel { width: 168px; }
+}
+
+/* --- The value ladder ---------------------------------------------------
+   Without this the tiers read as three unrelated feature lists. This says
+   what the extra money actually buys. */
+.plan-inherits {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 14px;
+  padding: 8px 11px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.76rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--gold);
+  background: rgba(227, 182, 92, 0.1);
+  border-left: 3px solid var(--gold);
+}
+
+/* Where the money goes on managed services. Said on the card, not in the
+   small print after they've committed. */
+.plan-spend,
+.co-spend {
+  padding: 10px 12px;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: rgba(225, 224, 204, 0.6);
+  background: rgba(9, 16, 24, 0.5);
+  border: 2px solid rgba(225, 224, 204, 0.12);
+}
+.plan-spend { margin-bottom: 12px; }
+.co-spend { margin: 0 0 18px; font-size: 0.8rem; }
+.co-spend strong { color: var(--gold); font-weight: 400; }
+.co-inherits {
+  margin-bottom: 12px;
+  padding: 8px 11px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--gold);
+  background: rgba(227, 182, 92, 0.1);
+  border-left: 3px solid var(--gold);
+}
+
+/* --- Hero card CTAs ----------------------------------------------------
+   The brand + bundle cards used pill buttons left over from the old theme.
+   Squared off, given the pixel face and a hard shadow, and paired with a
+   quiet "see work first" so both cards offer the same two doors as the
+   plan cards. */
+.hero-cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: stretch; }
+.hero-cta__go {
+  display: inline-flex; align-items: center; gap: 12px;
+  padding: 15px 22px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.98rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: #10202E;
+  background: var(--gold);
+  border: 2px solid var(--gold);
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.5);
+  transition: transform 120ms steps(3, end), box-shadow 120ms steps(3, end);
+}
+.hero-cta__go:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 rgba(0, 0, 0, 0.55); }
+.hero-cta__see {
+  padding: 15px 20px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.86rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: rgba(225, 224, 204, 0.7);
+  background: transparent;
+  border: 2px solid rgba(225, 224, 204, 0.2);
+  transition: color 120ms steps(3, end), border-color 120ms steps(3, end);
+}
+.hero-cta__see:hover { color: var(--gold); border-color: rgba(227, 182, 92, 0.6); }
+
+/* --- Checkout / booking modal ------------------------------------------ */
+.co-backdrop {
+  position: fixed; inset: 0; z-index: 9000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  background: rgba(9, 16, 24, 0.82);
+  backdrop-filter: blur(3px);
+  animation: co-in 160ms steps(4, end) both;
+  overflow-y: auto;
+}
+@keyframes co-in { from { opacity: 0; } to { opacity: 1; } }
+
+.co-panel {
+  position: relative;
+  width: min(520px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  padding: 30px clamp(20px, 4vw, 34px) 30px;
+  background: #17232F;
+  border: 2px solid rgba(227, 182, 92, 0.45);
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.5);
+  animation: co-rise 200ms steps(5, end) both;
+}
+@keyframes co-rise {
+  from { transform: translateY(14px) scale(0.97); }
+  to   { transform: translateY(0) scale(1); }
+}
+.co-panel:focus { outline: none; }
+
+.co-close {
+  position: absolute; top: 12px; right: 12px;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(225, 224, 204, 0.6);
+  background: rgba(0, 0, 0, 0.35);
+  border: 2px solid rgba(225, 224, 204, 0.16);
+}
+.co-close:hover { color: var(--gold); border-color: rgba(227, 182, 92, 0.5); }
+
+.co-head { border-bottom: 2px solid rgba(227, 182, 92, 0.22); padding-bottom: 18px; margin-bottom: 18px; }
+.co-kicker {
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.72rem; letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--gold);
+}
+.co-title {
+  margin: 8px 0 0;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 1.9rem; line-height: 1.05; color: var(--ink);
+}
+.co-price {
+  margin-top: 6px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 1.5rem; color: var(--gold);
+}
+.co-price__sub { margin-left: 8px; font-size: 0.8rem; color: rgba(225, 224, 204, 0.45); }
+/* The delivery promise is the strongest thing on offer — it gets a plate of
+   its own on the checkout screen rather than a grey caption. */
+.co-promise {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: 12px;
+  padding: 7px 12px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--gold);
+  background: rgba(227, 182, 92, 0.12);
+  border: 2px solid rgba(227, 182, 92, 0.38);
+}
+
+.co-includes { list-style: none; margin: 0 0 20px; padding: 0; display: grid; gap: 8px; }
+.co-includes li {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 0.86rem; color: rgba(225, 224, 204, 0.78);
+}
+.co-includes li svg { color: var(--gold); flex: none; margin-top: 3px; }
+
+.co-form { display: grid; gap: 14px; }
+.co-label {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 6px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(225, 224, 204, 0.55);
+}
+.co-error { color: #F2A0A0; letter-spacing: 0.06em; text-transform: none; }
+.co-input {
+  width: 100%;
+  padding: 11px 13px;
+  font: inherit; font-size: 0.92rem;
+  color: var(--ink);
+  background: rgba(9, 16, 24, 0.6);
+  border: 2px solid rgba(225, 224, 204, 0.14);
+  border-radius: 0;
+}
+.co-input:focus { outline: none; border-color: var(--gold); }
+
+.co-btn {
+  width: 100%;
+  padding: 14px 18px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.95rem; letter-spacing: 0.08em; text-transform: uppercase;
+  border: 2px solid transparent;
+  transition: transform 120ms steps(3, end), background 120ms steps(3, end);
+}
+.co-btn--primary { color: #10202E; background: var(--gold); box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.45); }
+.co-btn--primary:hover:not(:disabled) { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.5); }
+.co-btn--primary:disabled { opacity: 0.55; }
+.co-btn--ghost {
+  margin-top: 2px;
+  color: rgba(225, 224, 204, 0.42);
+  background: transparent;
+  border-color: rgba(225, 224, 204, 0.16);
+  cursor: not-allowed;
+}
+.co-fineprint { margin: 2px 0 0; font-size: 0.74rem; line-height: 1.5; color: rgba(225, 224, 204, 0.4); }
+.co-fail {
+  padding: 10px 12px; font-size: 0.82rem;
+  color: #F2A0A0; background: rgba(242, 160, 160, 0.08);
+  border: 2px solid rgba(242, 160, 160, 0.3);
+}
+
+.co-done { text-align: center; padding: 14px 0 4px; }
+.co-done__mark {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 56px; height: 56px; margin-bottom: 16px;
+  color: #10202E; background: var(--gold);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.45);
+}
+.co-done__title {
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 1.5rem; color: var(--ink); margin-bottom: 8px;
+}
+.co-done__body { font-size: 0.88rem; line-height: 1.6; color: rgba(225, 224, 204, 0.62); margin: 0 0 22px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .co-backdrop, .co-panel { animation: none; }
+}
+
+/* Pixel-art focus ring: square, chunky, no blur. */
+button:focus-visible, a:focus-visible {
+  outline: 3px solid var(--gold) !important;
+  outline-offset: 2px;
+  border-radius: 0 !important;
 }
 
 /* SVG noise utilities */

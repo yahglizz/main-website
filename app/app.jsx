@@ -2,7 +2,6 @@
 
 function App() {
   const [active, setActive] = React.useState('home');
-  const [revealed, setRevealed] = React.useState(false);
 
   const nav = (id) => {
     const el = document.getElementById(id);
@@ -11,25 +10,11 @@ function App() {
     window.scrollTo({ top: y, behavior: 'smooth' });
   };
 
-  const handleFirstLoop = React.useCallback(() => setRevealed(true), []);
-
-  // Lock scroll until the site is revealed so the intro is purely the video
-  React.useEffect(() => {
-    if (revealed) {
-      document.documentElement.style.overflow = '';
-      document.body.style.overflow = '';
-    } else {
-      document.documentElement.style.overflow = 'hidden';
-      document.body.style.overflow = 'hidden';
-    }
-    return () => {
-      document.documentElement.style.overflow = '';
-      document.body.style.overflow = '';
-    };
-  }, [revealed]);
+  // No scroll lock any more — the old hero held the page still during its intro
+  // video. The scroll world IS the intro now, and it needs scroll from frame one.
 
   React.useEffect(() => {
-    const ids = ['home', 'pricing', 'work', 'testimonials', 'contact'];
+    const ids = ['pricing', 'work', 'testimonials', 'contact'];
     const io = new IntersectionObserver(
       (entries) => {
         // pick the entry with the largest intersection ratio that's intersecting
@@ -49,13 +34,12 @@ function App() {
 
   return (
     <main className="bg-black text-ink">
-      <Hero onNav={nav} activeSection={active} revealed={revealed} onFirstLoop={handleFirstLoop} />
+      {/* The hero is now the scroll world (app/world.js), mounted above the
+          React root in index.html. Everything below is unchanged. */}
       <motion.div
         initial={{ opacity: 0 }}
-        animate={{ opacity: revealed ? 1 : 0 }}
+        animate={{ opacity: 1 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
-        aria-hidden={!revealed}
-        style={{ pointerEvents: revealed ? 'auto' : 'none' }}
       >
         <Pricing />
         <Work />

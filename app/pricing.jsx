@@ -6,47 +6,52 @@ const WEBSITE_PLANS = [
   {
     id: 'web-starter',
     title: 'Starter',
-    price: '$500',
-    timeline: '3–5 days',
+    price: '$300',
+    timeline: 'Under 1 week',
     accent: '#DEDBC8',
+    bestFor: 'Get found and start collecting leads.',
     cta: 'Get started',
     features: [
       '1-page high-converting website',
       'Mobile responsive design',
       'Lead capture form',
       'Clean modern UI',
-      'Fast turnaround',
+      'Free hosting setup',
     ],
   },
   {
     id: 'web-growth',
     title: 'Growth',
-    price: '$1,200',
-    timeline: '1–2 weeks',
+    price: '$700',
+    timeline: 'Under 1 week',
     accent: '#DEDBC8',
     featured: true,
+    inherits: 'Starter',
+    bestFor: 'Turn the traffic you already get into booked jobs.',
     cta: 'Start this build',
     features: [
       '3–5 page website',
       'CRM integration',
-      'Lead capture system',
       'Booking / calendar setup',
-      'Conversion-focused design',
+      'Automated lead follow-up',
+      'Google Business + reviews wired in',
     ],
   },
   {
     id: 'web-premium',
     title: 'Premium',
-    price: '$2,000+',
-    timeline: '2–3 weeks',
+    price: '$1,400',
+    timeline: 'Under 1 week',
     accent: '#DEDBC8',
+    inherits: 'Growth',
+    bestFor: 'A site built around your business, not a template.',
     cta: 'Request a quote',
     features: [
-      'Fully custom website',
-      'Advanced UI/UX design',
+      'Fully custom design — no template',
+      'Unlimited pages',
       'Funnel-ready structure',
-      'Optimized performance',
-      'Priority delivery',
+      'Copywriting included',
+      '30 days of edits after launch',
     ],
   },
 ];
@@ -55,48 +60,57 @@ const ADS_PLANS = [
   {
     id: 'ads-starter',
     title: 'Starter Ads',
-    price: '$300',
-    priceSub: 'setup + $300/mo',
-    timeline: 'Live in 3–5 days',
+    price: '$250',
+    priceSub: 'per month · management',
+    timeline: 'Live in under 1 week',
     accent: '#C9A8FF',
+    spendNote: true,
+    bestFor: 'One campaign, run properly, without you touching it.',
     cta: 'Launch ads',
     features: [
       'Campaign setup & launch',
-      '1–2 ad creatives',
-      'Basic audience targeting',
+      '2 ad creatives per month',
+      'Audience targeting & setup',
       'Monthly performance report',
     ],
   },
   {
     id: 'ads-growth',
     title: 'Growth Ads',
-    price: '$500',
-    priceSub: 'setup + $500/mo',
-    timeline: 'Live in 5–7 days',
+    price: '$450',
+    priceSub: 'per month · management',
+    timeline: 'Live in under 1 week',
     accent: '#C9A8FF',
     featured: true,
+    inherits: 'Starter Ads',
+    spendNote: true,
+    bestFor: 'Actively managed against cost per lead, every week.',
     cta: 'Start growing',
     features: [
-      'Multiple ad creatives',
-      'Retargeting setup',
-      'Conversion tracking',
+      '4–6 fresh creatives per month',
+      'Retargeting campaigns',
+      'Conversion tracking setup',
       'Weekly optimization',
-      'Audience A/B testing',
+      'Lead follow-up automation included',
     ],
   },
   {
     id: 'ads-scale',
     title: 'Scale Ads',
-    price: '$1,000+/mo',
-    timeline: 'Custom timeline',
+    price: '$750',
+    priceSub: 'per month · management',
+    timeline: 'Live in under 1 week',
     accent: '#C9A8FF',
+    inherits: 'Growth Ads',
+    spendNote: true,
+    bestFor: 'Multi-campaign spend that needs a hand on it daily.',
     cta: "Let's scale",
     features: [
-      'Full campaign system',
-      'Funnel integration',
-      'Advanced creative testing',
-      'Scaling strategy',
-      'Dedicated ad manager',
+      'Unlimited creative testing',
+      'Multi-campaign / multi-audience',
+      'Full funnel integration',
+      'Direct line for same-day changes',
+      'Bi-weekly strategy call',
     ],
   },
 ];
@@ -105,46 +119,54 @@ const AUTO_PLANS = [
   {
     id: 'auto-basic',
     title: 'Basic Automation',
-    price: '$300–$500',
-    timeline: '3–5 days',
+    price: '$250',
+    priceSub: 'one-time build',
+    timeline: 'Under 1 week',
     accent: '#7FE0B9',
+    bestFor: 'Stop losing leads you never got back to.',
     cta: 'Get automated',
     features: [
-      'SMS / email follow-up system',
+      'Instant SMS / email reply to new leads',
       'Lead capture automation',
-      'Basic workflow setup',
-      'Notification alerts',
+      'Missed-call text-back',
+      'Notification alerts to your phone',
     ],
   },
   {
     id: 'auto-growth',
     title: 'Growth Automation',
-    price: '$800–$1,500',
-    timeline: '1–2 weeks',
+    price: '$550',
+    priceSub: 'one-time build',
+    timeline: 'Under 1 week',
     accent: '#7FE0B9',
     featured: true,
+    inherits: 'Basic Automation',
+    bestFor: 'A system that chases the quiet ones for you.',
     cta: 'Build my system',
     features: [
       'CRM pipeline setup',
       'Multi-step follow-up sequences',
       'Booking + reminder system',
+      'Review request automation',
       'Lead nurturing workflows',
-      'Missed call text-back',
     ],
   },
   {
     id: 'auto-advanced',
     title: 'Advanced Systems',
-    price: '$2,000+',
-    timeline: '2–4 weeks',
+    price: '$1,100',
+    priceSub: 'one-time build',
+    timeline: 'Under 1 week',
     accent: '#7FE0B9',
+    inherits: 'Growth Automation',
+    bestFor: 'Custom back-office plumbing for how you actually work.',
     cta: 'Request a build',
     features: [
-      'AI chatbot integration',
-      'Full backend automation',
+      'AI chat / receptionist integration',
       'Custom workflow architecture',
-      'System & API integrations',
-      'Ongoing optimization',
+      'Connections to your existing tools',
+      'Reporting dashboard',
+      '30 days of tuning after launch',
     ],
   },
 ];
@@ -152,8 +174,8 @@ const AUTO_PLANS = [
 const ADDONS = [
   {
     id: 'retainer',
-    title: 'Monthly Retainer',
-    price: '$97–$297/mo',
+    title: 'Monthly Care Plan',
+    price: '$75–$200/mo',
     icon: Layers,
     accent: '#DEDBC8',
     description: 'Keep your site running, updated, and converting every month — without lifting a finger.',
@@ -167,7 +189,7 @@ const ADDONS = [
   {
     id: 'revamp',
     title: 'Website Revamp',
-    price: '$300–$800',
+    price: '$250–$500',
     icon: Sparkles,
     accent: '#9FC6FF',
     description: 'Your old site is costing you customers. We redesign it for speed, trust, and conversions.',
@@ -175,7 +197,7 @@ const ADDONS = [
       'Full visual redesign',
       'Mobile & speed optimization',
       'Updated copy & structure',
-      'Fast turnaround',
+      'Delivered in under 1 week',
     ],
   },
 ];
@@ -195,8 +217,28 @@ const BRAND_FEATURES = [
   'Business flyers (2–3 designs)',
   'Brand color palette & style guide',
   'Social media graphics kit',
-  'Fast 1–2 week delivery',
+  'Delivered in under 1 week',
 ];
+
+/* The two hero cards aren't tiers, but the checkout modal only needs this
+   shape — so they open it exactly like a plan does. */
+const BRAND_PACKAGE = {
+  id: 'brand-package',
+  title: 'Complete Brand Setup Package',
+  price: '$600',
+  timeline: 'Under 1 week',
+  cta: 'Get my brand package',
+  features: BRAND_FEATURES,
+};
+
+const BUNDLE_PACKAGE = {
+  id: 'bundle-package',
+  title: 'Business Rebuild System',
+  price: '$1,200',
+  timeline: 'Under 1 week',
+  cta: 'Build my business system',
+  features: BUNDLE_FEATURES,
+};
 
 const TABS = [
   {
@@ -238,6 +280,124 @@ const TABS = [
 
 // ── CARD COMPONENTS ───────────────────────────────────────
 
+/* ── SWIPE TO CONFIRM ──────────────────────────────────────
+   The plan CTA is a swipe control rather than a button: committing to a build
+   should take a deliberate gesture. Drag the handle across and it fires. But
+   a plain tap anywhere on the track runs the same swipe — nobody should be
+   forced to drag, and on a mouse dragging a 300px track is a chore. Enter and
+   Space do it too.
+
+   Pointer events are handled directly instead of through framer-motion drag:
+   this control sits inside the deck, which is itself draggable, and two
+   nested drag handlers fighting over the same gesture is a mess. A manual
+   handler with stopPropagation keeps the two apart cleanly. */
+
+const SWIPE_COMMIT = 0.72;   // fraction of the track that counts as committed
+
+function SwipeAction({ label, doneLabel, onComplete, featured }) {
+  const trackRef = React.useRef(null);
+  const maxRef = React.useRef(1);       // travel in px
+  const startRef = React.useRef(0);
+  const movedRef = React.useRef(false);
+  const pRef = React.useRef(0);         // progress, mirrored for event handlers
+  const [p, setP] = React.useState(0);
+  const [dragging, setDragging] = React.useState(false);
+  const [done, setDone] = React.useState(false);
+
+  const setProgress = (v) => { pRef.current = v; setP(v); };
+
+  const measure = React.useCallback(() => {
+    const t = trackRef.current;
+    if (!t) return;
+    const handle = t.querySelector('[data-handle]');
+    if (!handle) return;
+    maxRef.current = Math.max(1, t.clientWidth - handle.offsetWidth - 8);
+  }, []);
+
+  React.useLayoutEffect(() => {
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (trackRef.current) ro.observe(trackRef.current);
+    return () => ro.disconnect();
+  }, [measure]);
+
+  // Clean up the timers if the card unmounts mid-animation (tab switch).
+  const timers = React.useRef([]);
+  React.useEffect(() => () => timers.current.forEach(clearTimeout), []);
+
+  const finish = () => {
+    if (done) return;
+    setDone(true);
+    setProgress(1);
+    // Let the handle land before acting, then reset so the card isn't stuck
+    // in its completed state if the visitor scrolls back.
+    timers.current.push(setTimeout(() => onComplete && onComplete(), 420));
+    timers.current.push(setTimeout(() => { setDone(false); setProgress(0); }, 1800));
+  };
+
+  const onPointerDown = (e) => {
+    if (done) return;
+    e.stopPropagation();          // don't let the deck start a drag
+    measure();
+    startRef.current = e.clientX;
+    movedRef.current = false;
+    setDragging(true);
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) {}
+  };
+
+  const onPointerMove = (e) => {
+    if (!dragging || done) return;
+    const dx = e.clientX - startRef.current;
+    if (Math.abs(dx) > 3) movedRef.current = true;
+    setProgress(Math.min(1, Math.max(0, dx / maxRef.current)));
+  };
+
+  const endDrag = (e) => {
+    if (!dragging) return;
+    setDragging(false);
+    try { e.currentTarget.releasePointerCapture(e.pointerId); } catch (err) {}
+    // A press that never moved is a tap — run the whole swipe for them.
+    if (!movedRef.current) { finish(); return; }
+    if (pRef.current >= SWIPE_COMMIT) finish();
+    else setProgress(0);
+  };
+
+  const travel = (maxRef.current * p) || 0;
+
+  return (
+    <div
+      ref={trackRef}
+      role="button"
+      tabIndex={0}
+      aria-label={label}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={endDrag}
+      onPointerCancel={endDrag}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); finish(); }
+      }}
+      className={[
+        'swipe-track',
+        featured ? 'swipe-track--featured' : '',
+        dragging ? 'is-dragging' : '',
+        done ? 'is-done' : '',
+      ].join(' ')}
+    >
+      <span className="swipe-fill" style={{ width: `${p * 100}%` }} />
+      <span className="swipe-label">
+        {done ? (doneLabel || "Let's go") : label}
+      </span>
+      <span className="swipe-chevrons" aria-hidden="true">
+        <i /><i /><i />
+      </span>
+      <span data-handle className="swipe-handle" style={{ transform: `translateX(${travel}px)` }}>
+        {done ? <Check size={16} strokeWidth={3} /> : <ArrowRight size={16} />}
+      </span>
+    </div>
+  );
+}
+
 function CardCheck({ color }) {
   return (
     <span
@@ -249,7 +409,7 @@ function CardCheck({ color }) {
   );
 }
 
-function PlanCard({ plan, i }) {
+function PlanCard({ plan, i, active, onPick }) {
   const isFeatured = plan.featured;
   return (
     <motion.div
@@ -257,11 +417,13 @@ function PlanCard({ plan, i }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: i * 0.08, duration: 0.55, ease: [0.22, 0.8, 0.2, 1] }}
       className={[
-        'relative grain rounded-2xl md:rounded-3xl p-6 md:p-8 flex flex-col',
+        'relative grain rounded-2xl md:rounded-3xl p-6 md:p-8 flex flex-col h-full',
         'border transition-colors',
         isFeatured
           ? 'bg-gradient-to-b from-[#282621] to-[#1a1917] border-primary/35'
           : 'bg-card border-white/5 hover:border-white/15',
+        // In the deck, the front card is called out with a gold plate edge.
+        active ? 'deck-card-active' : '',
       ].join(' ')}
     >
       {isFeatured && (
@@ -278,12 +440,24 @@ function PlanCard({ plan, i }) {
         <span className="text-4xl md:text-5xl font-medium tracking-tighter text-ink">{plan.price}</span>
       </div>
       {plan.priceSub && (
-        <div className="text-xs text-primary/40 mb-4 mt-1">{plan.priceSub}</div>
+        <div className="text-xs text-primary/40 mt-1">{plan.priceSub}</div>
+      )}
+      {plan.bestFor && (
+        <p className="mt-3 text-sm leading-snug text-primary/55">{plan.bestFor}</p>
       )}
 
       <div className="h-px bg-white/5 my-5" />
 
-      <ul className="space-y-3 flex-1 mb-8">
+      {/* The ladder, said out loud. Without this the tiers read as three
+          unrelated lists and nobody can see what the extra money buys. */}
+      {plan.inherits && (
+        <div className="plan-inherits">
+          <Check size={11} strokeWidth={3} />
+          Everything in {plan.inherits}, plus:
+        </div>
+      )}
+
+      <ul className="space-y-3 flex-1 mb-6">
         {plan.features.map((f, k) => (
           <li key={k} className="flex items-start gap-3 text-sm text-primary/78">
             <CardCheck color={plan.accent} />
@@ -292,24 +466,195 @@ function PlanCard({ plan, i }) {
         ))}
       </ul>
 
+      {/* Ad spend never runs through us — say so on the card, not in the
+          small print after they've committed. */}
+      {plan.spendNote && (
+        <div className="plan-spend">
+          You pay Meta directly for ad spend. This is the management fee — we
+          never touch your budget.
+        </div>
+      )}
+
+      <SwipeAction
+        label={'Swipe to ' + plan.cta.charAt(0).toLowerCase() + plan.cta.slice(1)}
+        doneLabel="Opening checkout…"
+        featured={isFeatured}
+        onComplete={() => onPick && onPick(plan, 'checkout')}
+      />
+
+      {/* Plenty of people want to see the work before they commit. Give them a
+          one-tap way to do that instead of losing them to the back button. */}
       <button
-        onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-        className={[
-          'group inline-flex items-center justify-between rounded-full transition-colors w-full',
-          isFeatured
-            ? 'bg-primary text-black pl-5 pr-1.5 py-1.5 hover:bg-white'
-            : 'bg-black/50 border border-white/10 text-ink pl-5 pr-1.5 py-1.5 hover:border-white/25',
-        ].join(' ')}
+        type="button"
+        className="showcase-btn"
+        onClick={(e) => { e.stopPropagation(); onPick && onPick(plan, 'showcase'); }}
       >
-        <span className="text-sm font-medium">{plan.cta}</span>
-        <span className={[
-          'w-9 h-9 rounded-full flex items-center justify-center transition-transform group-hover:scale-110',
-          isFeatured ? 'bg-black text-primary' : 'bg-primary text-black',
-        ].join(' ')}>
-          <ArrowRight size={14} />
-        </span>
+        See work first — book a 15-min call
       </button>
     </motion.div>
+  );
+}
+
+/* ── PLAN DECK ─────────────────────────────────────────────
+   The plans are a swipeable deck rather than a static grid. Three ways in,
+   because people reach for different ones: drag it, tap it, or use the arrows
+   (and the arrow keys once it has focus). Neighbours stay partly on screen so
+   it still reads as a set of tiers you can compare, not a slideshow that hides
+   two thirds of the pricing.
+
+   Motion is quantised with a stepped easing curve — the slide lands in visible
+   increments instead of gliding, which is what makes it feel of a piece with
+   the pixel art rather than like a stock carousel. */
+
+// Deliberately coarse: 8 visible increments across the travel.
+const DECK_STEPS = (t) => Math.round(t * 8) / 8;
+
+function PlanDeck({ plans, onPick }) {
+  // Open on the featured tier — that's the one worth landing on.
+  const [idx, setIdx] = React.useState(() => {
+    const f = plans.findIndex(p => p.featured);
+    return f < 0 ? 0 : f;
+  });
+  const [metrics, setMetrics] = React.useState({ step: 0, offset: 0 });
+  const wrapRef = React.useRef(null);
+  // A drag ends with a click event on whatever was under the finger. Without
+  // this the swipe would advance once, then the trailing click would advance
+  // it again.
+  const draggedRef = React.useRef(false);
+  const n = plans.length;
+
+  const go = (d) => setIdx(i => Math.min(n - 1, Math.max(0, i + d)));
+
+  // The step is a measured pixel distance, not a percentage: the slides are
+  // sized in vw-ish units that change per breakpoint, and a percentage
+  // translate on the track would be relative to the track's own width.
+  React.useLayoutEffect(() => {
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+    const measure = () => {
+      const slide = wrap.querySelector('[data-slide]');
+      const track = wrap.querySelector('[data-track]');
+      if (!slide || !track) return;
+      const w = slide.offsetWidth;
+      const cs = getComputedStyle(track);
+      const gap = parseFloat(cs.columnGap || cs.gap) || 0;
+      setMetrics({ step: w + gap, offset: (wrap.offsetWidth - w) / 2 });
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(wrap);
+    return () => ro.disconnect();
+  }, [n]);
+
+  const x = metrics.offset - idx * metrics.step;
+
+  const onDragEnd = (_e, info) => {
+    if (!metrics.step) return;
+    // Fold velocity into the decision so a quick flick counts even when the
+    // finger barely travelled.
+    const throw_ = info.offset.x + info.velocity.x * 0.16;
+    if (throw_ < -metrics.step * 0.22) go(1);
+    else if (throw_ > metrics.step * 0.22) go(-1);
+    // Clear on the next tick — after the click this drag is about to produce.
+    setTimeout(() => { draggedRef.current = false; }, 0);
+  };
+
+  const onSlideClick = (e, i) => {
+    if (draggedRef.current) return;
+    // Never hijack a real control — the CTA inside the card has its own job.
+    if (e.target.closest('button, a')) return;
+    if (i === idx) go(1);       // tap the front card to move on
+    else setIdx(i);             // tap a neighbour to bring it forward
+  };
+
+  return (
+    <div
+      className="relative"
+      role="group"
+      aria-roledescription="carousel"
+      aria-label="Plans"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'ArrowRight') { e.preventDefault(); go(1); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+      }}
+    >
+      <div ref={wrapRef} className="overflow-hidden -mx-5 sm:-mx-8 px-0 pt-4 pb-2">
+        <motion.div
+          data-track
+          className="flex gap-4 md:gap-6 items-stretch cursor-grab active:cursor-grabbing"
+          drag="x"
+          dragElastic={0.12}
+          onDragStart={() => { draggedRef.current = true; }}
+          dragConstraints={{
+            left: metrics.offset - (n - 1) * metrics.step,
+            right: metrics.offset,
+          }}
+          onDragEnd={onDragEnd}
+          animate={{ x }}
+          transition={{ duration: 0.42, ease: DECK_STEPS }}
+        >
+          {plans.map((p, i) => (
+            <motion.div
+              data-slide
+              key={p.id}
+              onClick={(e) => onSlideClick(e, i)}
+              className="flex-none w-[82%] sm:w-[58%] lg:w-[34%] xl:w-[30%]"
+              animate={{ scale: i === idx ? 1 : 0.93, opacity: i === idx ? 1 : 0.5 }}
+              transition={{ duration: 0.42, ease: DECK_STEPS }}
+              aria-hidden={i === idx ? undefined : true}
+            >
+              <PlanCard plan={p} i={i} active={i === idx} onPick={onPick} />
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+
+      {/* Controls */}
+      <div className="mt-7 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-2.5">
+          <button
+            type="button"
+            onClick={() => go(-1)}
+            disabled={idx === 0}
+            aria-label="Previous plan"
+            className="deck-arrow"
+          >
+            <ArrowRight size={15} style={{ transform: 'rotate(180deg)' }} />
+          </button>
+          <button
+            type="button"
+            onClick={() => go(1)}
+            disabled={idx === n - 1}
+            aria-label="Next plan"
+            className="deck-arrow"
+          >
+            <ArrowRight size={15} />
+          </button>
+          <span className="deck-count ml-1" aria-live="polite">
+            {String(idx + 1).padStart(2, '0')} / {String(n).padStart(2, '0')}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <span className="deck-hint">
+            Tap or swipe<i className="pixel-caret ml-2" />
+          </span>
+          <div className="flex items-center gap-1.5">
+            {plans.map((p, i) => (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => setIdx(i)}
+                aria-label={`Show ${p.title}`}
+                aria-current={i === idx ? 'true' : undefined}
+                className={'deck-dot' + (i === idx ? ' is-active' : '')}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -353,7 +698,7 @@ function AddonCard({ addon, i }) {
   );
 }
 
-function BundleCard() {
+function BundleCard({ onPick }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -385,23 +730,20 @@ function BundleCard() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           <div>
             <div className="text-[10px] uppercase tracking-[0.24em] mb-3" style={{ color: 'rgba(229,197,128,0.55)' }}>Complete Business Package</div>
-            <div className="text-4xl md:text-5xl font-medium tracking-tighter text-ink mb-2" style={{ lineHeight: 1 }}>$1,500–$3,000</div>
-            <div className="text-sm mb-6" style={{ color: 'rgba(222,219,200,0.4)' }}>One-time investment · Fast delivery</div>
+            <div className="text-4xl md:text-5xl font-medium tracking-tighter text-ink mb-2" style={{ lineHeight: 1 }}>$1,200</div>
+            <div className="text-sm mb-6" style={{ color: 'rgba(222,219,200,0.4)' }}>One-time · Delivered in under 1 week</div>
             <p className="text-sm md:text-base leading-relaxed mb-8" style={{ color: 'rgba(222,219,200,0.7)' }}>
               The complete system to get your business visible online, capturing leads automatically, and following up without you lifting a finger. Website, branding, CRM, automation, and ads — all built together.
             </p>
-            <button
-              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-              className="group inline-flex items-center gap-3 rounded-full pl-6 pr-1.5 py-1.5 font-medium text-sm transition-colors"
-              style={{ background: '#E5C580', color: '#000' }}
-              onMouseEnter={(e) => e.currentTarget.style.background = '#fff'}
-              onMouseLeave={(e) => e.currentTarget.style.background = '#E5C580'}
-            >
-              <span>Build My Business System</span>
-              <span className="rounded-full w-10 h-10 flex items-center justify-center transition-transform group-hover:scale-110" style={{ background: '#000', color: '#E5C580' }}>
+            <div className="hero-cta">
+              <button type="button" className="hero-cta__go" onClick={() => onPick && onPick(BUNDLE_PACKAGE, 'checkout')}>
+                <span>Build My Business System</span>
                 <ArrowRight size={16} />
-              </span>
-            </button>
+              </button>
+              <button type="button" className="hero-cta__see" onClick={() => onPick && onPick(BUNDLE_PACKAGE, 'showcase')}>
+                See work first
+              </button>
+            </div>
             <p className="text-[11px] mt-4" style={{ color: 'rgba(222,219,200,0.32)' }}>Free 20-min strategy call · Fixed scope · No surprises</p>
           </div>
           <div>
@@ -419,7 +761,7 @@ function BundleCard() {
             <div className="mt-8 pt-6 border-t flex items-center gap-6 text-xs flex-wrap" style={{ borderColor: 'rgba(229,197,128,0.12)', color: 'rgba(222,219,200,0.38)' }}>
               <span className="flex items-center gap-1.5"><Check size={10} /> Fixed pricing</span>
               <span className="flex items-center gap-1.5"><Check size={10} /> No retainer lock-in</span>
-              <span className="flex items-center gap-1.5"><Check size={10} /> Delivered in 1 week or less</span>
+              <span className="flex items-center gap-1.5"><Check size={10} /> Delivered in under 1 week</span>
             </div>
           </div>
         </div>
@@ -428,7 +770,7 @@ function BundleCard() {
   );
 }
 
-function BrandPackageCard() {
+function BrandPackageCard({ onPick }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -475,27 +817,21 @@ function BrandPackageCard() {
               $800
             </div>
             <div className="text-sm mb-5" style={{ color: 'rgba(222,219,200,0.4)' }}>
-              One-time · Delivered in 1 week or less, guaranteed
+              One-time · Delivered in under 1 week, guaranteed
             </div>
             <p className="text-sm md:text-base leading-relaxed mb-7" style={{ color: 'rgba(222,219,200,0.72)' }}>
               Everything your business needs to look professional from day one — website, logo, flyers, brand colors, and social graphics. No hunting down five different freelancers. We handle it all, start to finish.
             </p>
 
-            <button
-              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-              className="group inline-flex items-center gap-3 rounded-full pl-6 pr-1.5 py-1.5 font-medium text-sm transition-colors"
-              style={{ background: '#E5C580', color: '#000' }}
-              onMouseEnter={(e) => e.currentTarget.style.background = '#fff'}
-              onMouseLeave={(e) => e.currentTarget.style.background = '#E5C580'}
-            >
-              <span>Get My Brand Package</span>
-              <span
-                className="rounded-full w-10 h-10 flex items-center justify-center transition-transform group-hover:scale-110"
-                style={{ background: '#000', color: '#E5C580' }}
-              >
+            <div className="hero-cta">
+              <button type="button" className="hero-cta__go" onClick={() => onPick && onPick(BRAND_PACKAGE, 'checkout')}>
+                <span>Get My Brand Package</span>
                 <ArrowRight size={16} />
-              </span>
-            </button>
+              </button>
+              <button type="button" className="hero-cta__see" onClick={() => onPick && onPick(BRAND_PACKAGE, 'showcase')}>
+                See work first
+              </button>
+            </div>
 
             <p className="text-[11px] mt-4" style={{ color: 'rgba(222,219,200,0.3)' }}>
               Fixed price · No hidden fees · Revisions included
@@ -527,7 +863,7 @@ function BrandPackageCard() {
             >
               <span className="flex items-center gap-1.5"><Check size={10} /> Fixed $800</span>
               <span className="flex items-center gap-1.5"><Check size={10} /> Revisions included</span>
-              <span className="flex items-center gap-1.5"><Check size={10} /> Delivered in 1 week or less</span>
+              <span className="flex items-center gap-1.5"><Check size={10} /> Delivered in under 1 week</span>
             </div>
           </div>
 
@@ -541,6 +877,10 @@ function BrandPackageCard() {
 
 function Pricing() {
   const [activeTab, setActiveTab] = React.useState('websites');
+  // One modal for the whole section — the plan and mode decide what it shows.
+  const [pick, setPick] = React.useState(null);
+  const openPick = React.useCallback((plan, mode) => setPick({ plan, mode }), []);
+  const closePick = React.useCallback(() => setPick(null), []);
   const tab = TABS.find(t => t.id === activeTab);
 
   return (
@@ -573,11 +913,11 @@ function Pricing() {
           </h2>
           <FadeUp delay={0.2}>
             <p className="mt-6 max-w-xl text-primary/55 text-sm md:text-base leading-relaxed">
-              Pick a service below. Every plan is fixed scope, delivered in 1 week or less — guaranteed — and built to produce real results. More leads, more customers, more growth.
+              Pick a service below. Every plan is fixed scope, delivered in under 1 week — guaranteed — and built to produce real results. More leads, more customers, more growth.
             </p>
             <div className="mt-5 inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] px-3 py-1.5 rounded-full border border-emerald-500/25 text-emerald-400/80" style={{ background: 'rgba(52,211,153,0.06)' }}>
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Delivered in 1 week or less — guaranteed
+              Every build delivered in under 1 week — guaranteed
             </div>
           </FadeUp>
         </div>
@@ -643,16 +983,10 @@ function Pricing() {
             </div>
 
             {/* Brand package hero card — top of Websites tab only */}
-            {activeTab === 'websites' && <BrandPackageCard />}
+            {activeTab === 'websites' && <BrandPackageCard onPick={openPick} />}
 
-            {/* Plan cards — shown for website / ads / automation tabs */}
-            {tab.plans && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                {tab.plans.map((p, i) => (
-                  <PlanCard key={p.id} plan={p} i={i} />
-                ))}
-              </div>
-            )}
+            {/* Plan cards — a swipeable deck (drag, tap, arrows, arrow keys) */}
+            {tab.plans && <PlanDeck plans={tab.plans} onPick={openPick} />}
 
             {/* Add-ons tab — 2 addon cards + bundle */}
             {activeTab === 'addons' && (
@@ -662,7 +996,7 @@ function Pricing() {
                     <AddonCard key={a.id} addon={a} i={i} />
                   ))}
                 </div>
-                <BundleCard />
+                <BundleCard onPick={openPick} />
               </>
             )}
           </motion.div>
@@ -674,11 +1008,15 @@ function Pricing() {
           <div className="flex items-center gap-5 flex-wrap">
             <span className="flex items-center gap-1.5"><Check size={11} /> Fixed pricing</span>
             <span className="flex items-center gap-1.5"><Check size={11} /> No retainer lock-in</span>
-            <span className="flex items-center gap-1.5"><Check size={11} /> US based</span>
+            <span className="flex items-center gap-1.5"><Check size={11} /> Delivered in under 1 week</span>
           </div>
         </div>
 
       </div>
+
+      {pick && (
+        <CheckoutModal plan={pick.plan} mode={pick.mode} onClose={closePick} />
+      )}
     </section>
   );
 }
