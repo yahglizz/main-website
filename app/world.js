@@ -212,6 +212,40 @@ function driveWorld(root, wordmark) {
   read();
 }
 
+/* ---------------------------------------------------------------------------
+   Frame locks.
+
+   Each leg FLIES INTO its district, so the card is only fully up at the END of
+   that leg (see the copy phase in scrub-engine). A fast flick sails straight
+   through that window and the visitor never sees the service at all.
+
+   So: a snap anchor parked at every arrival. `proximity` rather than
+   `mandatory` — a deliberate slow scroll still passes through freely, and the
+   flight is never a trap — but `scroll-snap-stop: always` means one fling can't
+   leap over a district. The page settles ON a card instead of mid-transition.
+
+   Offsets are written in vh units, so they stay correct through a resize with
+   no JS recalculation: one segment of `scroll: 1.5` is 1.5 viewport heights,
+   which is 150vh.
+   ------------------------------------------------------------------------- */
+function buildFrameLocks(root) {
+  const track = root.querySelector('.sw-track');
+  if (!track) return;
+  let cum = 0;
+  WORLD_SECTIONS.forEach((s, i) => {
+    cum += (s.scroll || 1.4);
+    // The last district's CTA holds from its arrival onward, and the world
+    // starts dissolving right after — locking there keeps the CTA on screen
+    // rather than half-faded.
+    const lock = document.createElement('i');
+    lock.className = 'sw-lock';
+    lock.dataset.lock = s.id;
+    lock.style.top = (cum * 100) + 'vh';
+    track.appendChild(lock);
+  });
+  root.classList.add('has-frame-locks');
+}
+
 function mountClientForgeWorld() {
   const el = document.getElementById('world');
   if (!el || typeof mountScrollWorld !== 'function') return;
@@ -242,6 +276,7 @@ function mountClientForgeWorld() {
     first.setAttribute('fetchpriority', 'high');
   }
 
+  buildFrameLocks(el);
   driveWorld(el, buildWordmark(el));
 }
 

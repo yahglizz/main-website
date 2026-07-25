@@ -192,7 +192,11 @@ function mountScrollWorld(container, config) {
 
   function jumpTo(i) {
     const seg = SECTIONS[i]._seg;
-    window.scrollTo({ top: seg.start + (seg.end - seg.start) * 0.5, behavior: reduce ? 'auto' : 'smooth' });
+    // Land on the ARRIVAL, not the middle. A leg flies into its scene, so the
+    // scene and its card are only fully up at the end of the segment —
+    // mid-segment is the approach, where the card has barely risen. (Landing
+    // on the arrival also matches where the frame locks sit.)
+    window.scrollTo({ top: seg.end, behavior: reduce ? 'auto' : 'smooth' });
   }
 
   function loadClip(s) {

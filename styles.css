@@ -560,6 +560,31 @@ body {
   border-color: rgba(227, 182, 92, 0.55);
 }
 
+/* --- Frame locks -------------------------------------------------------
+   Detents at each district arrival so a fast flick can't skip a service card.
+   Snap is `proximity`, so a deliberate scroll still moves freely; the anchors
+   only catch you when you come to rest near one. Scoped to the document
+   scroller but harmless below the hero — the sections underneath have no snap
+   targets, so nothing there snaps. */
+html { scroll-snap-type: y proximity; }
+
+.sw-lock {
+  position: absolute;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+  scroll-snap-align: start;
+  /* One fling stops at one district instead of leaping the set. */
+  scroll-snap-stop: always;
+}
+
+/* Someone who has asked the OS for less motion should not be pulled around by
+   the page either — for them the flight is free-scrolling. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-snap-type: none; }
+}
+
 /* --- Reel gallery ------------------------------------------------------
    Phone-shaped cutouts in a pixel frame. Sized so five sit across a desktop
    row and scroll sideways below that. */
