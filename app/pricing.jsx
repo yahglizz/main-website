@@ -367,7 +367,7 @@ function CardCheck({ color }) {
   );
 }
 
-function PlanCard({ plan, i, active }) {
+function PlanCard({ plan, i, active, onPick }) {
   const isFeatured = plan.featured;
   return (
     <motion.div
@@ -414,10 +414,20 @@ function PlanCard({ plan, i, active }) {
 
       <SwipeAction
         label={'Swipe to ' + plan.cta.charAt(0).toLowerCase() + plan.cta.slice(1)}
-        doneLabel="Opening the form…"
+        doneLabel="Opening checkout…"
         featured={isFeatured}
-        onComplete={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+        onComplete={() => onPick && onPick(plan, 'checkout')}
       />
+
+      {/* Plenty of people want to see the work before they commit. Give them a
+          one-tap way to do that instead of losing them to the back button. */}
+      <button
+        type="button"
+        className="showcase-btn"
+        onClick={(e) => { e.stopPropagation(); onPick && onPick(plan, 'showcase'); }}
+      >
+        See work first — book a 15-min call
+      </button>
     </motion.div>
   );
 }
@@ -436,7 +446,7 @@ function PlanCard({ plan, i, active }) {
 // Deliberately coarse: 8 visible increments across the travel.
 const DECK_STEPS = (t) => Math.round(t * 8) / 8;
 
-function PlanDeck({ plans }) {
+function PlanDeck({ plans, onPick }) {
   // Open on the featured tier — that's the one worth landing on.
   const [idx, setIdx] = React.useState(() => {
     const f = plans.findIndex(p => p.featured);
@@ -531,7 +541,7 @@ function PlanDeck({ plans }) {
               transition={{ duration: 0.42, ease: DECK_STEPS }}
               aria-hidden={i === idx ? undefined : true}
             >
-              <PlanCard plan={p} i={i} active={i === idx} />
+              <PlanCard plan={p} i={i} active={i === idx} onPick={onPick} />
             </motion.div>
           ))}
         </motion.div>
@@ -813,6 +823,10 @@ function BrandPackageCard() {
 
 function Pricing() {
   const [activeTab, setActiveTab] = React.useState('websites');
+  // One modal for the whole section — the plan and mode decide what it shows.
+  const [pick, setPick] = React.useState(null);
+  const openPick = React.useCallback((plan, mode) => setPick({ plan, mode }), []);
+  const closePick = React.useCallback(() => setPick(null), []);
   const tab = TABS.find(t => t.id === activeTab);
 
   return (
@@ -918,7 +932,7 @@ function Pricing() {
             {activeTab === 'websites' && <BrandPackageCard />}
 
             {/* Plan cards — a swipeable deck (drag, tap, arrows, arrow keys) */}
-            {tab.plans && <PlanDeck plans={tab.plans} />}
+            {tab.plans && <PlanDeck plans={tab.plans} onPick={openPick} />}
 
             {/* Add-ons tab — 2 addon cards + bundle */}
             {activeTab === 'addons' && (
@@ -945,6 +959,10 @@ function Pricing() {
         </div>
 
       </div>
+
+      {pick && (
+        <CheckoutModal plan={pick.plan} mode={pick.mode} onClose={closePick} />
+      )}
     </section>
   );
 }
