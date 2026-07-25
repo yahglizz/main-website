@@ -34,8 +34,8 @@ const WORLD_SECTIONS = [
     linger: 0.45,
     eyebrow: 'The Build District',
     title: 'Sites built to convert.',
-    body: 'Fast, mobile-first builds with lead capture, booking and CRM wired in from day one — not bolted on later.',
-    tags: ['Lead capture', 'Booking', 'Live in 3–5 days'],
+    body: 'Fast, mobile-first builds with lead capture, booking and CRM wired in from day one — delivered in under a week.',
+    tags: ['Lead capture', 'Booking', 'Live in under 1 week'],
   },
   {
     id: 'automation',

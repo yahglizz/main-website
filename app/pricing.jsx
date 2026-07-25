@@ -7,7 +7,7 @@ const WEBSITE_PLANS = [
     id: 'web-starter',
     title: 'Starter',
     price: '$500',
-    timeline: '3–5 days',
+    timeline: 'Under 1 week',
     accent: '#DEDBC8',
     cta: 'Get started',
     features: [
@@ -22,7 +22,7 @@ const WEBSITE_PLANS = [
     id: 'web-growth',
     title: 'Growth',
     price: '$1,200',
-    timeline: '1–2 weeks',
+    timeline: 'Under 1 week',
     accent: '#DEDBC8',
     featured: true,
     cta: 'Start this build',
@@ -38,7 +38,7 @@ const WEBSITE_PLANS = [
     id: 'web-premium',
     title: 'Premium',
     price: '$2,000+',
-    timeline: '2–3 weeks',
+    timeline: 'Under 1 week',
     accent: '#DEDBC8',
     cta: 'Request a quote',
     features: [
@@ -57,7 +57,7 @@ const ADS_PLANS = [
     title: 'Starter Ads',
     price: '$300',
     priceSub: 'setup + $300/mo',
-    timeline: 'Live in 3–5 days',
+    timeline: 'Live in under 1 week',
     accent: '#C9A8FF',
     cta: 'Launch ads',
     features: [
@@ -72,7 +72,7 @@ const ADS_PLANS = [
     title: 'Growth Ads',
     price: '$500',
     priceSub: 'setup + $500/mo',
-    timeline: 'Live in 5–7 days',
+    timeline: 'Live in under 1 week',
     accent: '#C9A8FF',
     featured: true,
     cta: 'Start growing',
@@ -88,7 +88,7 @@ const ADS_PLANS = [
     id: 'ads-scale',
     title: 'Scale Ads',
     price: '$1,000+/mo',
-    timeline: 'Custom timeline',
+    timeline: 'Under 1 week',
     accent: '#C9A8FF',
     cta: "Let's scale",
     features: [
@@ -106,7 +106,7 @@ const AUTO_PLANS = [
     id: 'auto-basic',
     title: 'Basic Automation',
     price: '$300–$500',
-    timeline: '3–5 days',
+    timeline: 'Under 1 week',
     accent: '#7FE0B9',
     cta: 'Get automated',
     features: [
@@ -120,7 +120,7 @@ const AUTO_PLANS = [
     id: 'auto-growth',
     title: 'Growth Automation',
     price: '$800–$1,500',
-    timeline: '1–2 weeks',
+    timeline: 'Under 1 week',
     accent: '#7FE0B9',
     featured: true,
     cta: 'Build my system',
@@ -136,7 +136,7 @@ const AUTO_PLANS = [
     id: 'auto-advanced',
     title: 'Advanced Systems',
     price: '$2,000+',
-    timeline: '2–4 weeks',
+    timeline: 'Under 1 week',
     accent: '#7FE0B9',
     cta: 'Request a build',
     features: [
@@ -195,8 +195,28 @@ const BRAND_FEATURES = [
   'Business flyers (2–3 designs)',
   'Brand color palette & style guide',
   'Social media graphics kit',
-  'Fast 1–2 week delivery',
+  'Delivered in under 1 week',
 ];
+
+/* The two hero cards aren't tiers, but the checkout modal only needs this
+   shape — so they open it exactly like a plan does. */
+const BRAND_PACKAGE = {
+  id: 'brand-package',
+  title: 'Complete Brand Setup Package',
+  price: '$800',
+  timeline: 'Under 1 week',
+  cta: 'Get my brand package',
+  features: BRAND_FEATURES,
+};
+
+const BUNDLE_PACKAGE = {
+  id: 'bundle-package',
+  title: 'Business Rebuild System',
+  price: '$1,500–$3,000',
+  timeline: 'Under 1 week',
+  cta: 'Build my business system',
+  features: BUNDLE_FEATURES,
+};
 
 const TABS = [
   {
@@ -635,7 +655,7 @@ function AddonCard({ addon, i }) {
   );
 }
 
-function BundleCard() {
+function BundleCard({ onPick }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -668,22 +688,19 @@ function BundleCard() {
           <div>
             <div className="text-[10px] uppercase tracking-[0.24em] mb-3" style={{ color: 'rgba(229,197,128,0.55)' }}>Complete Business Package</div>
             <div className="text-4xl md:text-5xl font-medium tracking-tighter text-ink mb-2" style={{ lineHeight: 1 }}>$1,500–$3,000</div>
-            <div className="text-sm mb-6" style={{ color: 'rgba(222,219,200,0.4)' }}>One-time investment · Fast delivery</div>
+            <div className="text-sm mb-6" style={{ color: 'rgba(222,219,200,0.4)' }}>One-time · Delivered in under 1 week</div>
             <p className="text-sm md:text-base leading-relaxed mb-8" style={{ color: 'rgba(222,219,200,0.7)' }}>
               The complete system to get your business visible online, capturing leads automatically, and following up without you lifting a finger. Website, branding, CRM, automation, and ads — all built together.
             </p>
-            <button
-              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-              className="group inline-flex items-center gap-3 rounded-full pl-6 pr-1.5 py-1.5 font-medium text-sm transition-colors"
-              style={{ background: '#E5C580', color: '#000' }}
-              onMouseEnter={(e) => e.currentTarget.style.background = '#fff'}
-              onMouseLeave={(e) => e.currentTarget.style.background = '#E5C580'}
-            >
-              <span>Build My Business System</span>
-              <span className="rounded-full w-10 h-10 flex items-center justify-center transition-transform group-hover:scale-110" style={{ background: '#000', color: '#E5C580' }}>
+            <div className="hero-cta">
+              <button type="button" className="hero-cta__go" onClick={() => onPick && onPick(BUNDLE_PACKAGE, 'checkout')}>
+                <span>Build My Business System</span>
                 <ArrowRight size={16} />
-              </span>
-            </button>
+              </button>
+              <button type="button" className="hero-cta__see" onClick={() => onPick && onPick(BUNDLE_PACKAGE, 'showcase')}>
+                See work first
+              </button>
+            </div>
             <p className="text-[11px] mt-4" style={{ color: 'rgba(222,219,200,0.32)' }}>Free 20-min strategy call · Fixed scope · No surprises</p>
           </div>
           <div>
@@ -701,7 +718,7 @@ function BundleCard() {
             <div className="mt-8 pt-6 border-t flex items-center gap-6 text-xs flex-wrap" style={{ borderColor: 'rgba(229,197,128,0.12)', color: 'rgba(222,219,200,0.38)' }}>
               <span className="flex items-center gap-1.5"><Check size={10} /> Fixed pricing</span>
               <span className="flex items-center gap-1.5"><Check size={10} /> No retainer lock-in</span>
-              <span className="flex items-center gap-1.5"><Check size={10} /> Delivered in 1 week or less</span>
+              <span className="flex items-center gap-1.5"><Check size={10} /> Delivered in under 1 week</span>
             </div>
           </div>
         </div>
@@ -710,7 +727,7 @@ function BundleCard() {
   );
 }
 
-function BrandPackageCard() {
+function BrandPackageCard({ onPick }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -757,27 +774,21 @@ function BrandPackageCard() {
               $800
             </div>
             <div className="text-sm mb-5" style={{ color: 'rgba(222,219,200,0.4)' }}>
-              One-time · Delivered in 1 week or less, guaranteed
+              One-time · Delivered in under 1 week, guaranteed
             </div>
             <p className="text-sm md:text-base leading-relaxed mb-7" style={{ color: 'rgba(222,219,200,0.72)' }}>
               Everything your business needs to look professional from day one — website, logo, flyers, brand colors, and social graphics. No hunting down five different freelancers. We handle it all, start to finish.
             </p>
 
-            <button
-              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-              className="group inline-flex items-center gap-3 rounded-full pl-6 pr-1.5 py-1.5 font-medium text-sm transition-colors"
-              style={{ background: '#E5C580', color: '#000' }}
-              onMouseEnter={(e) => e.currentTarget.style.background = '#fff'}
-              onMouseLeave={(e) => e.currentTarget.style.background = '#E5C580'}
-            >
-              <span>Get My Brand Package</span>
-              <span
-                className="rounded-full w-10 h-10 flex items-center justify-center transition-transform group-hover:scale-110"
-                style={{ background: '#000', color: '#E5C580' }}
-              >
+            <div className="hero-cta">
+              <button type="button" className="hero-cta__go" onClick={() => onPick && onPick(BRAND_PACKAGE, 'checkout')}>
+                <span>Get My Brand Package</span>
                 <ArrowRight size={16} />
-              </span>
-            </button>
+              </button>
+              <button type="button" className="hero-cta__see" onClick={() => onPick && onPick(BRAND_PACKAGE, 'showcase')}>
+                See work first
+              </button>
+            </div>
 
             <p className="text-[11px] mt-4" style={{ color: 'rgba(222,219,200,0.3)' }}>
               Fixed price · No hidden fees · Revisions included
@@ -809,7 +820,7 @@ function BrandPackageCard() {
             >
               <span className="flex items-center gap-1.5"><Check size={10} /> Fixed $800</span>
               <span className="flex items-center gap-1.5"><Check size={10} /> Revisions included</span>
-              <span className="flex items-center gap-1.5"><Check size={10} /> Delivered in 1 week or less</span>
+              <span className="flex items-center gap-1.5"><Check size={10} /> Delivered in under 1 week</span>
             </div>
           </div>
 
@@ -859,11 +870,11 @@ function Pricing() {
           </h2>
           <FadeUp delay={0.2}>
             <p className="mt-6 max-w-xl text-primary/55 text-sm md:text-base leading-relaxed">
-              Pick a service below. Every plan is fixed scope, delivered in 1 week or less — guaranteed — and built to produce real results. More leads, more customers, more growth.
+              Pick a service below. Every plan is fixed scope, delivered in under 1 week — guaranteed — and built to produce real results. More leads, more customers, more growth.
             </p>
             <div className="mt-5 inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] px-3 py-1.5 rounded-full border border-emerald-500/25 text-emerald-400/80" style={{ background: 'rgba(52,211,153,0.06)' }}>
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Delivered in 1 week or less — guaranteed
+              Every build delivered in under 1 week — guaranteed
             </div>
           </FadeUp>
         </div>
@@ -929,7 +940,7 @@ function Pricing() {
             </div>
 
             {/* Brand package hero card — top of Websites tab only */}
-            {activeTab === 'websites' && <BrandPackageCard />}
+            {activeTab === 'websites' && <BrandPackageCard onPick={openPick} />}
 
             {/* Plan cards — a swipeable deck (drag, tap, arrows, arrow keys) */}
             {tab.plans && <PlanDeck plans={tab.plans} onPick={openPick} />}
@@ -942,7 +953,7 @@ function Pricing() {
                     <AddonCard key={a.id} addon={a} i={i} />
                   ))}
                 </div>
-                <BundleCard />
+                <BundleCard onPick={openPick} />
               </>
             )}
           </motion.div>
@@ -954,7 +965,7 @@ function Pricing() {
           <div className="flex items-center gap-5 flex-wrap">
             <span className="flex items-center gap-1.5"><Check size={11} /> Fixed pricing</span>
             <span className="flex items-center gap-1.5"><Check size={11} /> No retainer lock-in</span>
-            <span className="flex items-center gap-1.5"><Check size={11} /> US based</span>
+            <span className="flex items-center gap-1.5"><Check size={11} /> Delivered in under 1 week</span>
           </div>
         </div>
 

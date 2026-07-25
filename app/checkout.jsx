@@ -119,7 +119,12 @@ function CheckoutModal({ plan, mode, onClose }) {
             {isShowcase ? 'Free · 15 minutes' : plan.price}
             {!isShowcase && plan.priceSub && <span className="co-price__sub">{plan.priceSub}</span>}
           </div>
-          {plan.timeline && !isShowcase && <div className="co-timeline">Delivery · {plan.timeline}</div>}
+          {!isShowcase && (
+            <div className="co-promise">
+              <Check size={12} strokeWidth={3} />
+              Delivered in under 1 week — guaranteed
+            </div>
+          )}
         </div>
 
         {sent ? (

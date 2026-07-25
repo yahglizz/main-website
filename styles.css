@@ -560,6 +560,35 @@ body {
   border-color: rgba(227, 182, 92, 0.55);
 }
 
+/* --- Hero card CTAs ----------------------------------------------------
+   The brand + bundle cards used pill buttons left over from the old theme.
+   Squared off, given the pixel face and a hard shadow, and paired with a
+   quiet "see work first" so both cards offer the same two doors as the
+   plan cards. */
+.hero-cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: stretch; }
+.hero-cta__go {
+  display: inline-flex; align-items: center; gap: 12px;
+  padding: 15px 22px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.98rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: #10202E;
+  background: var(--gold);
+  border: 2px solid var(--gold);
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.5);
+  transition: transform 120ms steps(3, end), box-shadow 120ms steps(3, end);
+}
+.hero-cta__go:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 rgba(0, 0, 0, 0.55); }
+.hero-cta__see {
+  padding: 15px 20px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.86rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: rgba(225, 224, 204, 0.7);
+  background: transparent;
+  border: 2px solid rgba(225, 224, 204, 0.2);
+  transition: color 120ms steps(3, end), border-color 120ms steps(3, end);
+}
+.hero-cta__see:hover { color: var(--gold); border-color: rgba(227, 182, 92, 0.6); }
+
 /* --- Checkout / booking modal ------------------------------------------ */
 .co-backdrop {
   position: fixed; inset: 0; z-index: 9000;
@@ -616,7 +645,18 @@ body {
   font-size: 1.5rem; color: var(--gold);
 }
 .co-price__sub { margin-left: 8px; font-size: 0.8rem; color: rgba(225, 224, 204, 0.45); }
-.co-timeline { margin-top: 4px; font-size: 0.76rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(225, 224, 204, 0.42); }
+/* The delivery promise is the strongest thing on offer — it gets a plate of
+   its own on the checkout screen rather than a grey caption. */
+.co-promise {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: 12px;
+  padding: 7px 12px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--gold);
+  background: rgba(227, 182, 92, 0.12);
+  border: 2px solid rgba(227, 182, 92, 0.38);
+}
 
 .co-includes { list-style: none; margin: 0 0 20px; padding: 0; display: grid; gap: 8px; }
 .co-includes li {
