@@ -14,7 +14,7 @@ const WORLD_SECTIONS = [
   {
     id: 'city',
     label: 'The Agency',
-    still: 'assets/hero/city.png',
+    still: 'assets/hero/start-city.png',
     clip: 'assets/vid/leg1.mp4',
     accent: '#E3B65C',
     scroll: 1.5,
@@ -27,7 +27,7 @@ const WORLD_SECTIONS = [
   {
     id: 'web',
     label: 'Websites',
-    still: 'assets/hero/dist-web.png',
+    still: 'assets/hero/start-web.png',
     clip: 'assets/vid/leg2.mp4',
     accent: '#E3B65C',
     scroll: 1.4,
@@ -40,7 +40,7 @@ const WORLD_SECTIONS = [
   {
     id: 'automation',
     label: 'Automation',
-    still: 'assets/hero/dist-automation.png',
+    still: 'assets/hero/start-automation.png',
     clip: 'assets/vid/leg3.mp4',
     accent: '#E3B65C',
     scroll: 1.4,
@@ -53,7 +53,7 @@ const WORLD_SECTIONS = [
   {
     id: 'ads',
     label: 'Ads',
-    still: 'assets/hero/dist-ads.png',
+    still: 'assets/hero/start-ads.png',
     clip: 'assets/vid/leg4.mp4',
     accent: '#E3B65C',
     scroll: 1.4,
@@ -66,7 +66,7 @@ const WORLD_SECTIONS = [
   {
     id: 'apps',
     label: 'Apps',
-    still: 'assets/hero/dist-apps.png',
+    still: 'assets/hero/start-apps.png',
     clip: 'assets/vid/leg5.mp4',
     accent: '#E3B65C',
     scroll: 1.7,
@@ -172,6 +172,13 @@ function mountClientForgeWorld() {
   const el = document.getElementById('world');
   if (!el || typeof mountScrollWorld !== 'function') return;
 
+  // The world is a ~7vh scroll track, so a browser restoring the previous
+  // scroll position drops you into the middle of the flight with no context.
+  // The film has to start at frame one. A real deep link (#pricing) is still
+  // honoured — that's a deliberate destination, not restored state.
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  if (!window.location.hash) window.scrollTo(0, 0);
+
   mountScrollWorld(el, {
     brand: { name: 'ClientForge', href: '#top' },
     hint: 'scroll to fly in',
@@ -181,6 +188,15 @@ function mountClientForgeWorld() {
     sections: WORLD_SECTIONS,
     connectors: [],   // architecture A — the legs are the journey
   });
+
+  // The engine lazy-loads every scene poster, which is right for scenes four
+  // deep but wrong for the one on screen at load — it has to paint immediately
+  // or the landing is empty until the clip decodes.
+  const first = el.querySelector('.sw-scene__still');
+  if (first) {
+    first.loading = 'eager';
+    first.setAttribute('fetchpriority', 'high');
+  }
 
   driveWordmark(buildWordmark(el));
 }
