@@ -141,19 +141,63 @@ function buildWordmark(root) {
   return wrap;
 }
 
-function driveWordmark(node) {
+/* ---------------------------------------------------------------------------
+   Scroll driver: the wordmark, and the world's exit.
+
+   Every layer the engine builds is `position: fixed`, which is what lets the
+   camera hold still while scroll drives time — but it also means the world
+   would stay pinned over the sections below it forever. So once the flight is
+   done, the whole thing dissolves and hands the screen to the page.
+
+   The fade is applied to each fixed layer rather than to the container,
+   deliberately: an opacity below 1 on the container would make it a containing
+   block for its own fixed descendants, and every layer would jump out of place
+   mid-fade. These layers' children are absolute, so fading them is safe.
+   ------------------------------------------------------------------------- */
+function driveWorld(root, wordmark) {
   const clamp = (x) => Math.min(1, Math.max(0, x));
+  const track = root.querySelector('.sw-track');
+  // Layers to dissolve. The hint is left out — the engine drives its opacity
+  // every frame and would overwrite us (it's long gone by this point anyway).
+  const layers = ['.sw-sky', '.sw-scrollbar', '.sw-topbar', '.sw-stage', '.sw-copylayer', '.sw-route']
+    .map(sel => root.querySelector(sel))
+    .filter(Boolean);
   let ticking = false;
 
   const read = () => {
     const vh = window.innerHeight || 1;
-    const y = (window.scrollY || window.pageYOffset) / vh;   // in viewport heights
-    const op = clamp((WORDMARK_HOLD - y) / WORDMARK_FADE);
-    node.style.opacity = op;
+    const y = window.scrollY || window.pageYOffset;
+    const yv = y / vh;                                  // in viewport heights
+
+    // --- wordmark ---
+    const wop = clamp((WORDMARK_HOLD - yv) / WORDMARK_FADE);
+    wordmark.style.opacity = wop;
     // Slow lift + shrink so it reads as sitting in the world rather than on
     // the glass, and gets out of the way as the city fills the frame.
-    node.style.transform = `translate(-50%, calc(-50% - ${(y * 3.2).toFixed(2)}vh)) scale(${(1 - y * 0.035).toFixed(4)})`;
-    node.style.visibility = op < 0.01 ? 'hidden' : 'visible';
+    wordmark.style.transform = `translate(-50%, calc(-50% - ${(yv * 3.2).toFixed(2)}vh)) scale(${(1 - yv * 0.035).toFixed(4)})`;
+
+    // --- world exit ---
+    // The engine sizes the track one viewport taller than the flight needs.
+    // That trailing viewport is exactly the handoff: the last frame is already
+    // reached when it starts, and the page below has fully arrived when it
+    // ends. Dissolve across it.
+    // Document-space bottom edge of the scroll track. Measured off the rect
+    // rather than offsetTop, which is relative to whatever the offsetParent
+    // happens to be.
+    const worldEnd = track ? track.getBoundingClientRect().bottom + y : 0;
+    const exit = clamp((y - (worldEnd - vh)) / vh);
+    const wop2 = wop * (1 - exit);
+
+    for (const n of layers) {
+      n.style.opacity = String(1 - exit);
+      // Let clicks through to the page below as soon as the world is on its
+      // way out — the nav and route rail are interactive and would otherwise
+      // swallow taps aimed at the sections underneath.
+      n.style.pointerEvents = exit > 0.5 ? 'none' : '';
+      n.style.visibility = exit >= 1 ? 'hidden' : '';
+    }
+    wordmark.style.opacity = wop2;
+    wordmark.style.visibility = wop2 < 0.01 ? 'hidden' : 'visible';
     ticking = false;
   };
 
@@ -198,7 +242,7 @@ function mountClientForgeWorld() {
     first.setAttribute('fetchpriority', 'high');
   }
 
-  driveWordmark(buildWordmark(el));
+  driveWorld(el, buildWordmark(el));
 }
 
 if (document.readyState === 'loading') {
