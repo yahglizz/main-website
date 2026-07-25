@@ -1,6 +1,8 @@
 /* Section 5: Contact form — powered by Web3Forms */
 
-const CONTACT_EMAIL = 'yahjair@atouchofblessings.com';
+// atouchofblessing.com — singular. The plural spelling has no MX records at
+// all, so every mailto: click and every reply-to on that domain bounced.
+const CONTACT_EMAIL = 'yahjair@atouchofblessing.com';
 const WEB3FORMS_KEY = '3af7cccb-3c24-448c-9e36-5c587250dfcc';
 
 function Field({ label, children, hint, required }) {
