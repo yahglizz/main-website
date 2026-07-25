@@ -249,7 +249,7 @@ function CardCheck({ color }) {
   );
 }
 
-function PlanCard({ plan, i }) {
+function PlanCard({ plan, i, active }) {
   const isFeatured = plan.featured;
   return (
     <motion.div
@@ -257,11 +257,13 @@ function PlanCard({ plan, i }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: i * 0.08, duration: 0.55, ease: [0.22, 0.8, 0.2, 1] }}
       className={[
-        'relative grain rounded-2xl md:rounded-3xl p-6 md:p-8 flex flex-col',
+        'relative grain rounded-2xl md:rounded-3xl p-6 md:p-8 flex flex-col h-full',
         'border transition-colors',
         isFeatured
           ? 'bg-gradient-to-b from-[#282621] to-[#1a1917] border-primary/35'
           : 'bg-card border-white/5 hover:border-white/15',
+        // In the deck, the front card is called out with a gold plate edge.
+        active ? 'deck-card-active' : '',
       ].join(' ')}
     >
       {isFeatured && (
@@ -310,6 +312,169 @@ function PlanCard({ plan, i }) {
         </span>
       </button>
     </motion.div>
+  );
+}
+
+/* ── PLAN DECK ─────────────────────────────────────────────
+   The plans are a swipeable deck rather than a static grid. Three ways in,
+   because people reach for different ones: drag it, tap it, or use the arrows
+   (and the arrow keys once it has focus). Neighbours stay partly on screen so
+   it still reads as a set of tiers you can compare, not a slideshow that hides
+   two thirds of the pricing.
+
+   Motion is quantised with a stepped easing curve — the slide lands in visible
+   increments instead of gliding, which is what makes it feel of a piece with
+   the pixel art rather than like a stock carousel. */
+
+// Deliberately coarse: 8 visible increments across the travel.
+const DECK_STEPS = (t) => Math.round(t * 8) / 8;
+
+function PlanDeck({ plans }) {
+  // Open on the featured tier — that's the one worth landing on.
+  const [idx, setIdx] = React.useState(() => {
+    const f = plans.findIndex(p => p.featured);
+    return f < 0 ? 0 : f;
+  });
+  const [metrics, setMetrics] = React.useState({ step: 0, offset: 0 });
+  const wrapRef = React.useRef(null);
+  // A drag ends with a click event on whatever was under the finger. Without
+  // this the swipe would advance once, then the trailing click would advance
+  // it again.
+  const draggedRef = React.useRef(false);
+  const n = plans.length;
+
+  const go = (d) => setIdx(i => Math.min(n - 1, Math.max(0, i + d)));
+
+  // The step is a measured pixel distance, not a percentage: the slides are
+  // sized in vw-ish units that change per breakpoint, and a percentage
+  // translate on the track would be relative to the track's own width.
+  React.useLayoutEffect(() => {
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+    const measure = () => {
+      const slide = wrap.querySelector('[data-slide]');
+      const track = wrap.querySelector('[data-track]');
+      if (!slide || !track) return;
+      const w = slide.offsetWidth;
+      const cs = getComputedStyle(track);
+      const gap = parseFloat(cs.columnGap || cs.gap) || 0;
+      setMetrics({ step: w + gap, offset: (wrap.offsetWidth - w) / 2 });
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(wrap);
+    return () => ro.disconnect();
+  }, [n]);
+
+  const x = metrics.offset - idx * metrics.step;
+
+  const onDragEnd = (_e, info) => {
+    if (!metrics.step) return;
+    // Fold velocity into the decision so a quick flick counts even when the
+    // finger barely travelled.
+    const throw_ = info.offset.x + info.velocity.x * 0.16;
+    if (throw_ < -metrics.step * 0.22) go(1);
+    else if (throw_ > metrics.step * 0.22) go(-1);
+    // Clear on the next tick — after the click this drag is about to produce.
+    setTimeout(() => { draggedRef.current = false; }, 0);
+  };
+
+  const onSlideClick = (e, i) => {
+    if (draggedRef.current) return;
+    // Never hijack a real control — the CTA inside the card has its own job.
+    if (e.target.closest('button, a')) return;
+    if (i === idx) go(1);       // tap the front card to move on
+    else setIdx(i);             // tap a neighbour to bring it forward
+  };
+
+  return (
+    <div
+      className="relative"
+      role="group"
+      aria-roledescription="carousel"
+      aria-label="Plans"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'ArrowRight') { e.preventDefault(); go(1); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+      }}
+    >
+      <div ref={wrapRef} className="overflow-hidden -mx-5 sm:-mx-8 px-0 pt-4 pb-2">
+        <motion.div
+          data-track
+          className="flex gap-4 md:gap-6 items-stretch cursor-grab active:cursor-grabbing"
+          drag="x"
+          dragElastic={0.12}
+          onDragStart={() => { draggedRef.current = true; }}
+          dragConstraints={{
+            left: metrics.offset - (n - 1) * metrics.step,
+            right: metrics.offset,
+          }}
+          onDragEnd={onDragEnd}
+          animate={{ x }}
+          transition={{ duration: 0.42, ease: DECK_STEPS }}
+        >
+          {plans.map((p, i) => (
+            <motion.div
+              data-slide
+              key={p.id}
+              onClick={(e) => onSlideClick(e, i)}
+              className="flex-none w-[82%] sm:w-[58%] lg:w-[34%] xl:w-[30%]"
+              animate={{ scale: i === idx ? 1 : 0.93, opacity: i === idx ? 1 : 0.5 }}
+              transition={{ duration: 0.42, ease: DECK_STEPS }}
+              aria-hidden={i === idx ? undefined : true}
+            >
+              <PlanCard plan={p} i={i} active={i === idx} />
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+
+      {/* Controls */}
+      <div className="mt-7 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-2.5">
+          <button
+            type="button"
+            onClick={() => go(-1)}
+            disabled={idx === 0}
+            aria-label="Previous plan"
+            className="deck-arrow"
+          >
+            <ArrowRight size={15} style={{ transform: 'rotate(180deg)' }} />
+          </button>
+          <button
+            type="button"
+            onClick={() => go(1)}
+            disabled={idx === n - 1}
+            aria-label="Next plan"
+            className="deck-arrow"
+          >
+            <ArrowRight size={15} />
+          </button>
+          <span className="deck-count ml-1" aria-live="polite">
+            {String(idx + 1).padStart(2, '0')} / {String(n).padStart(2, '0')}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <span className="deck-hint">
+            Tap or swipe<i className="pixel-caret ml-2" />
+          </span>
+          <div className="flex items-center gap-1.5">
+            {plans.map((p, i) => (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => setIdx(i)}
+                aria-label={`Show ${p.title}`}
+                aria-current={i === idx ? 'true' : undefined}
+                className={'deck-dot' + (i === idx ? ' is-active' : '')}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -645,14 +810,8 @@ function Pricing() {
             {/* Brand package hero card — top of Websites tab only */}
             {activeTab === 'websites' && <BrandPackageCard />}
 
-            {/* Plan cards — shown for website / ads / automation tabs */}
-            {tab.plans && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                {tab.plans.map((p, i) => (
-                  <PlanCard key={p.id} plan={p} i={i} />
-                ))}
-              </div>
-            )}
+            {/* Plan cards — a swipeable deck (drag, tap, arrows, arrow keys) */}
+            {tab.plans && <PlanDeck plans={tab.plans} />}
 
             {/* Add-ons tab — 2 addon cards + bundle */}
             {activeTab === 'addons' && (

@@ -289,6 +289,65 @@ body {
   .cf-wordmark__sub { opacity: 0.92; }
 }
 
+/* --- Plan deck controls -----------------------------------------------
+   Square, chunky, stepped. The deck is the one place on the page where the
+   visitor is being asked to do something with their hands, so the controls
+   are deliberately loud. */
+.deck-arrow {
+  width: 40px; height: 40px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--gold);
+  background: rgba(227, 182, 92, 0.1);
+  border: 2px solid rgba(227, 182, 92, 0.35);
+  box-shadow: 3px 3px 0 rgba(9, 16, 24, 0.5);
+  border-radius: 0 !important;
+  transition: transform 120ms steps(3, end), background 120ms steps(3, end), box-shadow 120ms steps(3, end);
+}
+.deck-arrow:hover:not(:disabled) {
+  background: var(--gold);
+  color: #10202E;
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 rgba(9, 16, 24, 0.6);
+}
+.deck-arrow:active:not(:disabled) { transform: translate(1px, 1px); box-shadow: 1px 1px 0 rgba(9, 16, 24, 0.6); }
+.deck-arrow:disabled { opacity: 0.28; cursor: default; }
+
+.deck-count {
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  color: rgba(227, 182, 92, 0.75);
+}
+
+.deck-hint {
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(225, 224, 204, 0.42);
+  display: none;
+}
+@media (min-width: 640px) { .deck-hint { display: inline-flex; align-items: center; } }
+
+/* Dots are pixel blocks; the active one stretches into a bar. */
+.deck-dot {
+  width: 10px; height: 10px;
+  background: rgba(225, 224, 204, 0.22);
+  border: 2px solid transparent;
+  border-radius: 0 !important;
+  transition: width 160ms steps(4, end), background 160ms steps(4, end);
+}
+.deck-dot:hover { background: rgba(225, 224, 204, 0.45); }
+.deck-dot.is-active { width: 26px; background: var(--gold); }
+
+/* The front card of the deck gets a lit plate edge. */
+.deck-card-active {
+  box-shadow: 0 0 0 2px rgba(227, 182, 92, 0.55), 6px 6px 0 rgba(9, 16, 24, 0.45);
+}
+
+/* Dragging a card shouldn't select its text. */
+[data-track] { user-select: none; -webkit-user-select: none; }
+
 /* Pixel-art focus ring: square, chunky, no blur. */
 button:focus-visible, a:focus-visible {
   outline: 3px solid var(--gold) !important;
