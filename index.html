@@ -7,7 +7,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
@@ -17,12 +17,17 @@
         colors: {
           primary: '#DEDBC8',
           ink: '#E1E0CC',
-          surface: '#101010',
-          card: '#212121',
+          gold: '#E3B65C',
+          void: '#1B2836',
+          surface: '#223546',
+          card: '#2C4157',
         },
         fontFamily: {
           sans: ['Almarai', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-          serif: ['"Instrument Serif"', 'serif'],
+          // `serif` is aliased to the pixel face so every existing
+          // `font-serif` usage picks up the pixel theme automatically.
+          serif: ['"Pixelify Sans"', 'ui-monospace', 'monospace'],
+          pixel: ['"Pixelify Sans"', 'ui-monospace', 'monospace'],
         },
         letterSpacing: {
           tightest: '-0.07em',
@@ -39,9 +44,16 @@
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/framer-motion@11.3.19/dist/framer-motion.js"></script>
 </head>
-<body class="bg-black text-ink antialiased">
+<body class="bg-void text-ink antialiased scanlines">
+
+<!-- The scroll world owns the top of the page. It builds its own DOM, so it
+     lives outside the React root rather than inside a component. -->
+<div id="world"></div>
 
 <div id="root"></div>
+
+<script src="app/scrub-engine.js"></script>
+<script src="app/world.js"></script>
 
 <script type="text/babel" src="app/icons.jsx"></script>
 <script type="text/babel" src="app/motionPrimitives.jsx"></script>

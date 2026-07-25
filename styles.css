@@ -1,12 +1,159 @@
 :root {
   color-scheme: dark;
+  --void: #1B2836;
+  --surface: #223546;
+  --card: #2C4157;
+  --ink: #E1E0CC;
+  --gold: #E3B65C;
 }
-html, body { background: #000; }
+html, body { background: var(--void); }
 body {
   font-family: 'Almarai', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Oxygen', 'Ubuntu', Cantarell, sans-serif;
-  color: #E1E0CC;
+  color: var(--ink);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+/* ============================================================
+   PIXEL THEME
+   The art is 16-bit pixel art, so the chrome matches it:
+   hard edges, no blur, stepped shadows, crisp upscaling.
+   ============================================================ */
+
+/* Pixel art must never be smoothed when scaled up. */
+.pixelated {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* The pixel face has no real italic — synthesized oblique looks broken,
+   so neutralise it everywhere `font-serif italic` was used. */
+.font-serif { font-style: normal !important; }
+
+/* Blanket radius knock-down: pixel UI is square. One rule instead of
+   editing every rounded-* utility across eight components. */
+[class*="rounded"] { border-radius: 2px !important; }
+
+/* Hard offset shadow instead of a soft blur. */
+.shadow-pixel { box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.45); }
+.shadow-pixel-sm { box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.45); }
+
+/* Chunky border that reads as a sprite outline. */
+.border-pixel { border: 2px solid rgba(225, 224, 204, 0.22); }
+
+/* Every solid black surface becomes the art's slate void, so the pixel
+   plates sit on the same ground as the page. One rule instead of
+   rewriting ~40 `bg-black` usages across the components.
+   Translucent `bg-black/NN` scrims are left alone — they sit over
+   artwork, where a near-black veil is still what we want. */
+.bg-black { background-color: var(--void) !important; }
+
+/* --- Notched corners -------------------------------------------------
+   Real pixel UI doesn't round corners, it steps them. clip-path cuts a
+   4px notch out of each corner so buttons and cards read as sprites
+   rather than CSS. */
+.pixel-notch {
+  clip-path: polygon(
+    4px 0, calc(100% - 4px) 0, 100% 4px, 100% calc(100% - 4px),
+    calc(100% - 4px) 100%, 4px 100%, 0 calc(100% - 4px), 0 4px
+  );
+  border-radius: 0 !important;
+}
+
+/* --- Pixel scrollbar -------------------------------------------------- */
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: var(--void); }
+::-webkit-scrollbar-thumb {
+  background: var(--gold);
+  border: 3px solid var(--void);   /* stepped inset, no radius */
+}
+::-webkit-scrollbar-thumb:hover { background: var(--ink); }
+
+/* --- Scanlines --------------------------------------------------------
+   A 1-in-3px darkening comb. Very low alpha — reads as CRT texture at a
+   glance, never as stripes. Pointer-events off; purely decorative. */
+.scanlines::after {
+  content: '';
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.13) 0 1px,
+    transparent 1px 3px
+  );
+  mix-blend-mode: multiply;
+}
+
+/* --- Blinking block caret --------------------------------------------- */
+@keyframes pixel-blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+.pixel-caret {
+  display: inline-block;
+  width: 0.55em; height: 1em;
+  background: var(--gold);
+  vertical-align: -0.12em;
+  animation: pixel-blink 1s steps(1, end) infinite;
+}
+
+/* --- Stepped hover lift ----------------------------------------------
+   Snaps in whole pixels (steps) instead of gliding — motion should be
+   quantised like the art. */
+.pixel-lift { transition: transform 120ms steps(3, end), box-shadow 120ms steps(3, end); }
+.pixel-lift:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.5); }
+
+/* --- scroll-world theme ----------------------------------------------
+   The engine wraps its own tokens in @layer sw, so a plain page-level
+   block outranks them without specificity hacks. Dark slate to match the
+   rest of the site; the clips are bright cream/gold so they carry the
+   colour and the chrome stays quiet. */
+.sw-root {
+  --sw-bg: #1B2836;
+  --sw-ink: #E1E0CC;
+  --sw-ink-soft: rgba(225, 224, 204, 0.62);
+  --sw-accent: #E3B65C;
+  --sw-font-display: 'Pixelify Sans', ui-monospace, monospace;
+  --sw-font-body: 'Almarai', system-ui, sans-serif;
+}
+
+/* The world's own chrome is pixel-styled too: square corners, hard edges. */
+.sw-root [class*="sw-"] { border-radius: 0 !important; }
+
+/* The engine hardcodes white scrims (`color-mix(#fff …)`) on a few surfaces
+   because its stock theme is light. Those don't follow --sw-bg, so on a dark
+   theme they have to be overridden by hand. */
+.sw-root .sw-nav,
+.sw-root .sw-route__label {
+  background: rgba(27, 40, 54, 0.82) !important;
+  border: 2px solid rgba(227, 182, 92, 0.28) !important;
+  color: var(--sw-ink) !important;
+}
+.sw-root .sw-copy__tags li {
+  background: rgba(227, 182, 92, 0.12) !important;
+  border: 2px solid rgba(227, 182, 92, 0.34) !important;
+  color: var(--sw-accent) !important;
+}
+.sw-root .sw-nav { gap: 2px !important; padding: 4px !important; }
+.sw-root .sw-nav__item {
+  padding: 6px 12px !important;
+  border: 2px solid transparent !important;
+  letter-spacing: 0.02em;
+}
+.sw-root .sw-nav__item + .sw-nav__item { border-left: 2px solid rgba(227, 182, 92, 0.18) !important; }
+.sw-root .sw-nav__item.is-active { color: #10202E !important; }
+.sw-root .sw-topcta,
+.sw-root .sw-btn--primary {
+  color: #10202E !important;
+  background: var(--sw-accent) !important;
+}
+/* Copy sits over bright cream artwork — give it a readable scrim. */
+.sw-root .sw-copy { text-shadow: 0 2px 10px rgba(16, 32, 46, 0.75); }
+
+/* Pixel-art focus ring: square, chunky, no blur. */
+button:focus-visible, a:focus-visible {
+  outline: 3px solid var(--gold) !important;
+  outline-offset: 2px;
+  border-radius: 0 !important;
 }
 
 /* SVG noise utilities */
