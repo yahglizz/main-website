@@ -85,6 +85,7 @@ function CheckoutModal({ plan, mode, onClose }) {
           package: `${plan.title} — ${plan.price}${plan.priceSub ? ' (' + plan.priceSub + ')' : ''}`,
           timeline: plan.timeline || '',
           request_type: isShowcase ? 'Showcase call' : 'Package reservation',
+          ad_spend: plan.spendNote ? 'Client pays ad spend directly — this is management fee only' : '',
           message: form.note,
         }),
       });
@@ -143,11 +144,23 @@ function CheckoutModal({ plan, mode, onClose }) {
         ) : (
           <>
             {!isShowcase && (
-              <ul className="co-includes">
-                {plan.features.map((f, i) => (
-                  <li key={i}><Check size={11} strokeWidth={3} /><span>{f}</span></li>
-                ))}
-              </ul>
+              <>
+                {plan.inherits && (
+                  <div className="co-inherits">Everything in {plan.inherits}, plus:</div>
+                )}
+                <ul className="co-includes">
+                  {plan.features.map((f, i) => (
+                    <li key={i}><Check size={11} strokeWidth={3} /><span>{f}</span></li>
+                  ))}
+                </ul>
+                {plan.spendNote && (
+                  <div className="co-spend">
+                    <strong>Ad spend is separate.</strong> You pay Meta directly with your
+                    own card, so you keep control of the budget and can change it any
+                    time. This price is the monthly management fee.
+                  </div>
+                )}
+              </>
             )}
 
             <form onSubmit={submit} className="co-form" noValidate>

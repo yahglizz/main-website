@@ -6,47 +6,52 @@ const WEBSITE_PLANS = [
   {
     id: 'web-starter',
     title: 'Starter',
-    price: '$500',
+    price: '$300',
     timeline: 'Under 1 week',
     accent: '#DEDBC8',
+    bestFor: 'Get found and start collecting leads.',
     cta: 'Get started',
     features: [
       '1-page high-converting website',
       'Mobile responsive design',
       'Lead capture form',
       'Clean modern UI',
-      'Fast turnaround',
+      'Free hosting setup',
     ],
   },
   {
     id: 'web-growth',
     title: 'Growth',
-    price: '$1,200',
+    price: '$700',
     timeline: 'Under 1 week',
     accent: '#DEDBC8',
     featured: true,
+    inherits: 'Starter',
+    bestFor: 'Turn the traffic you already get into booked jobs.',
     cta: 'Start this build',
     features: [
       '3–5 page website',
       'CRM integration',
-      'Lead capture system',
       'Booking / calendar setup',
-      'Conversion-focused design',
+      'Automated lead follow-up',
+      'Google Business + reviews wired in',
     ],
   },
   {
     id: 'web-premium',
     title: 'Premium',
-    price: '$2,000+',
+    price: '$1,400',
     timeline: 'Under 1 week',
     accent: '#DEDBC8',
+    inherits: 'Growth',
+    bestFor: 'A site built around your business, not a template.',
     cta: 'Request a quote',
     features: [
-      'Fully custom website',
-      'Advanced UI/UX design',
+      'Fully custom design — no template',
+      'Unlimited pages',
       'Funnel-ready structure',
-      'Optimized performance',
-      'Priority delivery',
+      'Copywriting included',
+      '30 days of edits after launch',
     ],
   },
 ];
@@ -55,48 +60,57 @@ const ADS_PLANS = [
   {
     id: 'ads-starter',
     title: 'Starter Ads',
-    price: '$300',
-    priceSub: 'setup + $300/mo',
+    price: '$250',
+    priceSub: 'per month · management',
     timeline: 'Live in under 1 week',
     accent: '#C9A8FF',
+    spendNote: true,
+    bestFor: 'One campaign, run properly, without you touching it.',
     cta: 'Launch ads',
     features: [
       'Campaign setup & launch',
-      '1–2 ad creatives',
-      'Basic audience targeting',
+      '2 ad creatives per month',
+      'Audience targeting & setup',
       'Monthly performance report',
     ],
   },
   {
     id: 'ads-growth',
     title: 'Growth Ads',
-    price: '$500',
-    priceSub: 'setup + $500/mo',
+    price: '$450',
+    priceSub: 'per month · management',
     timeline: 'Live in under 1 week',
     accent: '#C9A8FF',
     featured: true,
+    inherits: 'Starter Ads',
+    spendNote: true,
+    bestFor: 'Actively managed against cost per lead, every week.',
     cta: 'Start growing',
     features: [
-      'Multiple ad creatives',
-      'Retargeting setup',
-      'Conversion tracking',
+      '4–6 fresh creatives per month',
+      'Retargeting campaigns',
+      'Conversion tracking setup',
       'Weekly optimization',
-      'Audience A/B testing',
+      'Lead follow-up automation included',
     ],
   },
   {
     id: 'ads-scale',
     title: 'Scale Ads',
-    price: '$1,000+/mo',
-    timeline: 'Under 1 week',
+    price: '$750',
+    priceSub: 'per month · management',
+    timeline: 'Live in under 1 week',
     accent: '#C9A8FF',
+    inherits: 'Growth Ads',
+    spendNote: true,
+    bestFor: 'Multi-campaign spend that needs a hand on it daily.',
     cta: "Let's scale",
     features: [
-      'Full campaign system',
-      'Funnel integration',
-      'Advanced creative testing',
-      'Scaling strategy',
-      'Dedicated ad manager',
+      'Unlimited creative testing',
+      'Multi-campaign / multi-audience',
+      'Full funnel integration',
+      'Direct line for same-day changes',
+      'Bi-weekly strategy call',
     ],
   },
 ];
@@ -105,46 +119,54 @@ const AUTO_PLANS = [
   {
     id: 'auto-basic',
     title: 'Basic Automation',
-    price: '$300–$500',
+    price: '$250',
+    priceSub: 'one-time build',
     timeline: 'Under 1 week',
     accent: '#7FE0B9',
+    bestFor: 'Stop losing leads you never got back to.',
     cta: 'Get automated',
     features: [
-      'SMS / email follow-up system',
+      'Instant SMS / email reply to new leads',
       'Lead capture automation',
-      'Basic workflow setup',
-      'Notification alerts',
+      'Missed-call text-back',
+      'Notification alerts to your phone',
     ],
   },
   {
     id: 'auto-growth',
     title: 'Growth Automation',
-    price: '$800–$1,500',
+    price: '$550',
+    priceSub: 'one-time build',
     timeline: 'Under 1 week',
     accent: '#7FE0B9',
     featured: true,
+    inherits: 'Basic Automation',
+    bestFor: 'A system that chases the quiet ones for you.',
     cta: 'Build my system',
     features: [
       'CRM pipeline setup',
       'Multi-step follow-up sequences',
       'Booking + reminder system',
+      'Review request automation',
       'Lead nurturing workflows',
-      'Missed call text-back',
     ],
   },
   {
     id: 'auto-advanced',
     title: 'Advanced Systems',
-    price: '$2,000+',
+    price: '$1,100',
+    priceSub: 'one-time build',
     timeline: 'Under 1 week',
     accent: '#7FE0B9',
+    inherits: 'Growth Automation',
+    bestFor: 'Custom back-office plumbing for how you actually work.',
     cta: 'Request a build',
     features: [
-      'AI chatbot integration',
-      'Full backend automation',
+      'AI chat / receptionist integration',
       'Custom workflow architecture',
-      'System & API integrations',
-      'Ongoing optimization',
+      'Connections to your existing tools',
+      'Reporting dashboard',
+      '30 days of tuning after launch',
     ],
   },
 ];
@@ -152,8 +174,8 @@ const AUTO_PLANS = [
 const ADDONS = [
   {
     id: 'retainer',
-    title: 'Monthly Retainer',
-    price: '$97–$297/mo',
+    title: 'Monthly Care Plan',
+    price: '$75–$200/mo',
     icon: Layers,
     accent: '#DEDBC8',
     description: 'Keep your site running, updated, and converting every month — without lifting a finger.',
@@ -167,7 +189,7 @@ const ADDONS = [
   {
     id: 'revamp',
     title: 'Website Revamp',
-    price: '$300–$800',
+    price: '$250–$500',
     icon: Sparkles,
     accent: '#9FC6FF',
     description: 'Your old site is costing you customers. We redesign it for speed, trust, and conversions.',
@@ -175,7 +197,7 @@ const ADDONS = [
       'Full visual redesign',
       'Mobile & speed optimization',
       'Updated copy & structure',
-      'Fast turnaround',
+      'Delivered in under 1 week',
     ],
   },
 ];
@@ -203,7 +225,7 @@ const BRAND_FEATURES = [
 const BRAND_PACKAGE = {
   id: 'brand-package',
   title: 'Complete Brand Setup Package',
-  price: '$800',
+  price: '$600',
   timeline: 'Under 1 week',
   cta: 'Get my brand package',
   features: BRAND_FEATURES,
@@ -212,7 +234,7 @@ const BRAND_PACKAGE = {
 const BUNDLE_PACKAGE = {
   id: 'bundle-package',
   title: 'Business Rebuild System',
-  price: '$1,500–$3,000',
+  price: '$1,200',
   timeline: 'Under 1 week',
   cta: 'Build my business system',
   features: BUNDLE_FEATURES,
@@ -418,12 +440,24 @@ function PlanCard({ plan, i, active, onPick }) {
         <span className="text-4xl md:text-5xl font-medium tracking-tighter text-ink">{plan.price}</span>
       </div>
       {plan.priceSub && (
-        <div className="text-xs text-primary/40 mb-4 mt-1">{plan.priceSub}</div>
+        <div className="text-xs text-primary/40 mt-1">{plan.priceSub}</div>
+      )}
+      {plan.bestFor && (
+        <p className="mt-3 text-sm leading-snug text-primary/55">{plan.bestFor}</p>
       )}
 
       <div className="h-px bg-white/5 my-5" />
 
-      <ul className="space-y-3 flex-1 mb-8">
+      {/* The ladder, said out loud. Without this the tiers read as three
+          unrelated lists and nobody can see what the extra money buys. */}
+      {plan.inherits && (
+        <div className="plan-inherits">
+          <Check size={11} strokeWidth={3} />
+          Everything in {plan.inherits}, plus:
+        </div>
+      )}
+
+      <ul className="space-y-3 flex-1 mb-6">
         {plan.features.map((f, k) => (
           <li key={k} className="flex items-start gap-3 text-sm text-primary/78">
             <CardCheck color={plan.accent} />
@@ -431,6 +465,15 @@ function PlanCard({ plan, i, active, onPick }) {
           </li>
         ))}
       </ul>
+
+      {/* Ad spend never runs through us — say so on the card, not in the
+          small print after they've committed. */}
+      {plan.spendNote && (
+        <div className="plan-spend">
+          You pay Meta directly for ad spend. This is the management fee — we
+          never touch your budget.
+        </div>
+      )}
 
       <SwipeAction
         label={'Swipe to ' + plan.cta.charAt(0).toLowerCase() + plan.cta.slice(1)}
@@ -687,7 +730,7 @@ function BundleCard({ onPick }) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           <div>
             <div className="text-[10px] uppercase tracking-[0.24em] mb-3" style={{ color: 'rgba(229,197,128,0.55)' }}>Complete Business Package</div>
-            <div className="text-4xl md:text-5xl font-medium tracking-tighter text-ink mb-2" style={{ lineHeight: 1 }}>$1,500–$3,000</div>
+            <div className="text-4xl md:text-5xl font-medium tracking-tighter text-ink mb-2" style={{ lineHeight: 1 }}>$1,200</div>
             <div className="text-sm mb-6" style={{ color: 'rgba(222,219,200,0.4)' }}>One-time · Delivered in under 1 week</div>
             <p className="text-sm md:text-base leading-relaxed mb-8" style={{ color: 'rgba(222,219,200,0.7)' }}>
               The complete system to get your business visible online, capturing leads automatically, and following up without you lifting a finger. Website, branding, CRM, automation, and ads — all built together.

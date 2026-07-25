@@ -560,6 +560,44 @@ body {
   border-color: rgba(227, 182, 92, 0.55);
 }
 
+/* --- The value ladder ---------------------------------------------------
+   Without this the tiers read as three unrelated feature lists. This says
+   what the extra money actually buys. */
+.plan-inherits {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 14px;
+  padding: 8px 11px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.76rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--gold);
+  background: rgba(227, 182, 92, 0.1);
+  border-left: 3px solid var(--gold);
+}
+
+/* Where the money goes on managed services. Said on the card, not in the
+   small print after they've committed. */
+.plan-spend,
+.co-spend {
+  padding: 10px 12px;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: rgba(225, 224, 204, 0.6);
+  background: rgba(9, 16, 24, 0.5);
+  border: 2px solid rgba(225, 224, 204, 0.12);
+}
+.plan-spend { margin-bottom: 12px; }
+.co-spend { margin: 0 0 18px; font-size: 0.8rem; }
+.co-spend strong { color: var(--gold); font-weight: 400; }
+.co-inherits {
+  margin-bottom: 12px;
+  padding: 8px 11px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--gold);
+  background: rgba(227, 182, 92, 0.1);
+  border-left: 3px solid var(--gold);
+}
+
 /* --- Hero card CTAs ----------------------------------------------------
    The brand + bundle cards used pill buttons left over from the old theme.
    Squared off, given the pixel face and a hard shadow, and paired with a
