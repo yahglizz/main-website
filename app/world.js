@@ -82,6 +82,92 @@ const WORLD_SECTIONS = [
   },
 ];
 
+/* ---------------------------------------------------------------------------
+   The wordmark.
+
+   A centred pixel-type title that types itself in on load and then HOLDS
+   through the first two scenes — the cloud approach and the city arrival —
+   because that stretch is the establishing shot. It fades out as the camera
+   commits to the first district, handing the screen back to the section copy.
+   Mounted alongside the engine rather than inside it: the engine owns the
+   scenes, this is page furniture on top of them.
+   ------------------------------------------------------------------------- */
+const WORDMARK_TEXT = 'THE CLIENT FORGE';
+
+// Hold for as long as the first two scenes scroll, then dissolve over the last
+// stretch. Read off the section config so retiming a scene keeps this honest.
+const WORDMARK_HOLD = (WORLD_SECTIONS[0].scroll || 1.4) + (WORLD_SECTIONS[1].scroll || 1.4);
+const WORDMARK_FADE = 0.55;   // vh of scroll the fade-out takes
+
+function buildWordmark(root) {
+  const wrap = document.createElement('div');
+  wrap.className = 'cf-wordmark';
+
+  const line = document.createElement('div');
+  line.className = 'cf-wordmark__line';
+
+  // Per-word wrappers keep words from breaking mid-air; per-letter spans are
+  // what the stagger animates.
+  let i = 0;
+  WORDMARK_TEXT.split(' ').forEach((word) => {
+    const w = document.createElement('span');
+    w.className = 'cf-wordmark__word';
+    for (const ch of word) {
+      const s = document.createElement('span');
+      s.className = 'cf-wordmark__ch';
+      s.textContent = ch;
+      // A custom property, not `style.animationDelay` — these glyphs run two
+      // animations and a single inline delay would overwrite the whole list.
+      s.style.setProperty('--d', (i * 70) + 'ms');
+      w.appendChild(s);
+      i++;
+    }
+    line.appendChild(w);
+  });
+
+  const caret = document.createElement('span');
+  caret.className = 'cf-wordmark__caret';
+  caret.style.setProperty('--d', (i * 70) + 'ms');
+  line.appendChild(caret);
+
+  const sub = document.createElement('div');
+  sub.className = 'cf-wordmark__sub';
+  sub.textContent = 'websites · automation · ads · apps';
+  sub.style.setProperty('--d', (i * 70 + 260) + 'ms');
+
+  wrap.appendChild(line);
+  wrap.appendChild(sub);
+  root.appendChild(wrap);
+  return wrap;
+}
+
+function driveWordmark(node) {
+  const clamp = (x) => Math.min(1, Math.max(0, x));
+  let ticking = false;
+
+  const read = () => {
+    const vh = window.innerHeight || 1;
+    const y = (window.scrollY || window.pageYOffset) / vh;   // in viewport heights
+    const op = clamp((WORDMARK_HOLD - y) / WORDMARK_FADE);
+    node.style.opacity = op;
+    // Slow lift + shrink so it reads as sitting in the world rather than on
+    // the glass, and gets out of the way as the city fills the frame.
+    node.style.transform = `translate(-50%, calc(-50% - ${(y * 3.2).toFixed(2)}vh)) scale(${(1 - y * 0.035).toFixed(4)})`;
+    node.style.visibility = op < 0.01 ? 'hidden' : 'visible';
+    ticking = false;
+  };
+
+  const onScroll = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(read);
+  };
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  read();
+}
+
 function mountClientForgeWorld() {
   const el = document.getElementById('world');
   if (!el || typeof mountScrollWorld !== 'function') return;
@@ -95,6 +181,8 @@ function mountClientForgeWorld() {
     sections: WORLD_SECTIONS,
     connectors: [],   // architecture A — the legs are the journey
   });
+
+  driveWordmark(buildWordmark(el));
 }
 
 if (document.readyState === 'loading') {
