@@ -238,6 +238,124 @@ const TABS = [
 
 // ── CARD COMPONENTS ───────────────────────────────────────
 
+/* ── SWIPE TO CONFIRM ──────────────────────────────────────
+   The plan CTA is a swipe control rather than a button: committing to a build
+   should take a deliberate gesture. Drag the handle across and it fires. But
+   a plain tap anywhere on the track runs the same swipe — nobody should be
+   forced to drag, and on a mouse dragging a 300px track is a chore. Enter and
+   Space do it too.
+
+   Pointer events are handled directly instead of through framer-motion drag:
+   this control sits inside the deck, which is itself draggable, and two
+   nested drag handlers fighting over the same gesture is a mess. A manual
+   handler with stopPropagation keeps the two apart cleanly. */
+
+const SWIPE_COMMIT = 0.72;   // fraction of the track that counts as committed
+
+function SwipeAction({ label, doneLabel, onComplete, featured }) {
+  const trackRef = React.useRef(null);
+  const maxRef = React.useRef(1);       // travel in px
+  const startRef = React.useRef(0);
+  const movedRef = React.useRef(false);
+  const pRef = React.useRef(0);         // progress, mirrored for event handlers
+  const [p, setP] = React.useState(0);
+  const [dragging, setDragging] = React.useState(false);
+  const [done, setDone] = React.useState(false);
+
+  const setProgress = (v) => { pRef.current = v; setP(v); };
+
+  const measure = React.useCallback(() => {
+    const t = trackRef.current;
+    if (!t) return;
+    const handle = t.querySelector('[data-handle]');
+    if (!handle) return;
+    maxRef.current = Math.max(1, t.clientWidth - handle.offsetWidth - 8);
+  }, []);
+
+  React.useLayoutEffect(() => {
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (trackRef.current) ro.observe(trackRef.current);
+    return () => ro.disconnect();
+  }, [measure]);
+
+  // Clean up the timers if the card unmounts mid-animation (tab switch).
+  const timers = React.useRef([]);
+  React.useEffect(() => () => timers.current.forEach(clearTimeout), []);
+
+  const finish = () => {
+    if (done) return;
+    setDone(true);
+    setProgress(1);
+    // Let the handle land before acting, then reset so the card isn't stuck
+    // in its completed state if the visitor scrolls back.
+    timers.current.push(setTimeout(() => onComplete && onComplete(), 420));
+    timers.current.push(setTimeout(() => { setDone(false); setProgress(0); }, 1800));
+  };
+
+  const onPointerDown = (e) => {
+    if (done) return;
+    e.stopPropagation();          // don't let the deck start a drag
+    measure();
+    startRef.current = e.clientX;
+    movedRef.current = false;
+    setDragging(true);
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) {}
+  };
+
+  const onPointerMove = (e) => {
+    if (!dragging || done) return;
+    const dx = e.clientX - startRef.current;
+    if (Math.abs(dx) > 3) movedRef.current = true;
+    setProgress(Math.min(1, Math.max(0, dx / maxRef.current)));
+  };
+
+  const endDrag = (e) => {
+    if (!dragging) return;
+    setDragging(false);
+    try { e.currentTarget.releasePointerCapture(e.pointerId); } catch (err) {}
+    // A press that never moved is a tap — run the whole swipe for them.
+    if (!movedRef.current) { finish(); return; }
+    if (pRef.current >= SWIPE_COMMIT) finish();
+    else setProgress(0);
+  };
+
+  const travel = (maxRef.current * p) || 0;
+
+  return (
+    <div
+      ref={trackRef}
+      role="button"
+      tabIndex={0}
+      aria-label={label}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={endDrag}
+      onPointerCancel={endDrag}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); finish(); }
+      }}
+      className={[
+        'swipe-track',
+        featured ? 'swipe-track--featured' : '',
+        dragging ? 'is-dragging' : '',
+        done ? 'is-done' : '',
+      ].join(' ')}
+    >
+      <span className="swipe-fill" style={{ width: `${p * 100}%` }} />
+      <span className="swipe-label">
+        {done ? (doneLabel || "Let's go") : label}
+      </span>
+      <span className="swipe-chevrons" aria-hidden="true">
+        <i /><i /><i />
+      </span>
+      <span data-handle className="swipe-handle" style={{ transform: `translateX(${travel}px)` }}>
+        {done ? <Check size={16} strokeWidth={3} /> : <ArrowRight size={16} />}
+      </span>
+    </div>
+  );
+}
+
 function CardCheck({ color }) {
   return (
     <span
@@ -294,23 +412,12 @@ function PlanCard({ plan, i, active }) {
         ))}
       </ul>
 
-      <button
-        onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-        className={[
-          'group inline-flex items-center justify-between rounded-full transition-colors w-full',
-          isFeatured
-            ? 'bg-primary text-black pl-5 pr-1.5 py-1.5 hover:bg-white'
-            : 'bg-black/50 border border-white/10 text-ink pl-5 pr-1.5 py-1.5 hover:border-white/25',
-        ].join(' ')}
-      >
-        <span className="text-sm font-medium">{plan.cta}</span>
-        <span className={[
-          'w-9 h-9 rounded-full flex items-center justify-center transition-transform group-hover:scale-110',
-          isFeatured ? 'bg-black text-primary' : 'bg-primary text-black',
-        ].join(' ')}>
-          <ArrowRight size={14} />
-        </span>
-      </button>
+      <SwipeAction
+        label={'Swipe to ' + plan.cta.charAt(0).toLowerCase() + plan.cta.slice(1)}
+        doneLabel="Opening the form…"
+        featured={isFeatured}
+        onComplete={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+      />
     </motion.div>
   );
 }

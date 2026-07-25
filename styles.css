@@ -348,6 +348,198 @@ body {
 /* Dragging a card shouldn't select its text. */
 [data-track] { user-select: none; -webkit-user-select: none; }
 
+/* --- Brand mark -------------------------------------------------------
+   The engine ships a gradient bar as a placeholder logo. Replaced with the
+   real ClientForge emblem — a winged, haloed anvil, pixel-drawn in the same
+   gold and slate as the world. Rendered `pixelated` so it stays crisp. */
+.sw-root .sw-brand__mark {
+  width: 30px; height: 30px;
+  background: url('assets/logo/clientforge-mark.png') center / contain no-repeat !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  image-rendering: pixelated;
+}
+.sw-root .sw-brand__name { letter-spacing: 0.04em; }
+
+/* --- Scroll cue -------------------------------------------------------
+   The engine's stock hint is low-contrast type with no plate, which vanishes
+   against bright cloud art. It gets its own slate plate, the pixel face, and a
+   bouncing arrow — it's the one instruction the page depends on. */
+.sw-root .sw-hint {
+  bottom: 34px;
+  gap: 12px;
+  padding: 12px 22px 14px;
+  background: rgba(16, 27, 38, 0.86);
+  border: 2px solid rgba(227, 182, 92, 0.42);
+  box-shadow: 5px 5px 0 rgba(9, 16, 24, 0.5);
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  text-transform: none;
+  color: var(--ink);
+}
+/* The engine's own marker element becomes the arrow. */
+.sw-root .sw-hint i {
+  width: 0; height: 0;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-top: 12px solid var(--gold);
+  background: none;
+  animation: hint-drop 1.5s steps(3, end) infinite;
+}
+@keyframes hint-drop {
+  0%, 100% { transform: translateY(0); opacity: 0.75; }
+  50%      { transform: translateY(6px); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sw-root .sw-hint i { animation: none; }
+}
+
+/* --- District label ---------------------------------------------------
+   The district name is the point of each scene, so it leads: bigger than the
+   headline's supporting role, gold, and sitting on its own rule. */
+.sw-root .sw-copy__eyebrow {
+  margin-top: 16px;
+  font-size: clamp(1.05rem, 1.7vw, 1.6rem);
+  letter-spacing: 0.2em;
+  line-height: 1.1;
+  color: var(--gold);
+  text-shadow: 2px 2px 0 rgba(9, 16, 24, 0.9);
+}
+.sw-root .sw-copy__eyebrow::after {
+  content: '';
+  display: block;
+  width: 3.2em;
+  height: 3px;
+  margin-top: 10px;
+  background: var(--gold);
+}
+.sw-root .sw-copy__title {
+  margin-top: 14px;
+  font-size: clamp(1.6rem, 3.2vw, 2.6rem);   /* the label leads, this supports */
+}
+
+/* --- Plan deck --------------------------------------------------------- */
+.deck-arrow {
+  width: 40px; height: 40px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--gold);
+  background: rgba(227, 182, 92, 0.1);
+  border: 2px solid rgba(227, 182, 92, 0.34);
+  box-shadow: 3px 3px 0 rgba(9, 16, 24, 0.5);
+  transition: transform 120ms steps(3, end), background 120ms steps(3, end);
+}
+.deck-arrow:hover:not(:disabled) { background: rgba(227, 182, 92, 0.22); transform: translate(-2px, -2px); }
+.deck-arrow:disabled { opacity: 0.28; }
+
+.deck-count,
+.deck-hint {
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  color: rgba(225, 224, 204, 0.5);
+  text-transform: uppercase;
+}
+.deck-count { color: var(--gold); }
+.deck-hint { display: inline-flex; align-items: center; }
+.deck-hint .pixel-caret { width: 0.4em; height: 0.9em; }
+
+.deck-dot {
+  width: 12px; height: 12px;
+  background: rgba(225, 224, 204, 0.22);
+  border: 2px solid transparent;
+  transition: width 140ms steps(3, end), background 140ms steps(3, end);
+}
+.deck-dot.is-active { width: 30px; background: var(--gold); }
+
+/* The front card of the deck gets a lit edge so it's obvious which one the
+   controls act on. */
+.deck-card-active { box-shadow: 0 0 0 2px var(--gold), 6px 6px 0 rgba(9, 16, 24, 0.5); }
+
+/* --- Swipe to confirm --------------------------------------------------
+   Drag the knob across, or tap anywhere on the track for the same result. */
+.swipe-track {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 56px; padding: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  background: rgba(9, 16, 24, 0.5);
+  border: 2px solid rgba(225, 224, 204, 0.14);
+  transition: border-color 140ms steps(3, end), background 140ms steps(3, end);
+}
+.swipe-track--featured {
+  background: rgba(227, 182, 92, 0.08);
+  border-color: rgba(227, 182, 92, 0.4);
+}
+.swipe-track:hover { border-color: rgba(227, 182, 92, 0.65); }
+.swipe-track.is-done { border-color: var(--gold); background: rgba(227, 182, 92, 0.18); }
+/* While dragging, drop the easing so the handle tracks the finger exactly. */
+.swipe-track.is-dragging .swipe-handle,
+.swipe-track.is-dragging .swipe-fill { transition: none; }
+
+.swipe-fill {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  background: rgba(227, 182, 92, 0.2);
+  pointer-events: none;
+  transition: width 240ms steps(6, end);
+}
+.swipe-label {
+  position: relative;
+  padding-left: 34px;                 /* clear of the knob at rest */
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(225, 224, 204, 0.82);
+  pointer-events: none;
+  animation: swipe-nudge 2.4s steps(4, end) infinite;
+}
+.swipe-track.is-done .swipe-label { color: var(--gold); animation: none; }
+@keyframes swipe-nudge {
+  0%, 70%, 100% { transform: translateX(0); }
+  80%           { transform: translateX(4px); }
+}
+
+.swipe-handle {
+  position: absolute; left: 4px; top: 4px;
+  width: 48px; height: calc(100% - 8px);
+  display: flex; align-items: center; justify-content: center;
+  background: var(--gold);
+  color: #10202E;
+  box-shadow: 3px 0 0 rgba(9, 16, 24, 0.45);
+  cursor: grab;
+  touch-action: pan-y;                /* vertical page scroll still works */
+  transition: transform 240ms steps(6, end);
+}
+.swipe-track.is-dragging .swipe-handle { cursor: grabbing; }
+
+/* Chevrons pointing the way, marching toward the far end. */
+.swipe-chevrons {
+  position: absolute; right: 14px;
+  display: flex; gap: 5px;
+  pointer-events: none;
+}
+.swipe-chevrons i {
+  width: 7px; height: 7px;
+  border-right: 3px solid rgba(227, 182, 92, 0.8);
+  border-top: 3px solid rgba(227, 182, 92, 0.8);
+  transform: rotate(45deg);
+  animation: swipe-march 1.5s steps(2, end) infinite;
+}
+.swipe-chevrons i:nth-child(2) { animation-delay: 0.18s; }
+.swipe-chevrons i:nth-child(3) { animation-delay: 0.36s; }
+.swipe-track.is-done .swipe-chevrons { opacity: 0; }
+@keyframes swipe-march {
+  0%, 100% { opacity: 0.25; }
+  40%      { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .swipe-label { animation: none; }
+}
+
 /* Pixel-art focus ring: square, chunky, no blur. */
 button:focus-visible, a:focus-visible {
   outline: 3px solid var(--gold) !important;

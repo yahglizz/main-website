@@ -225,7 +225,7 @@ function mountClientForgeWorld() {
 
   mountScrollWorld(el, {
     brand: { name: 'ClientForge', href: '#top' },
-    hint: 'scroll to fly in',
+    hint: 'Scroll — the city is working below',
     nav: true,
     atmosphere: true,
     diveScroll: 1.4,
