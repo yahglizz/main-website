@@ -1045,3 +1045,334 @@ button:focus-visible, a:focus-visible {
 
 /* Selection */
 ::selection { background: #DEDBC8; color: #000; }
+
+/* --- Select-a-preview grid ---------------------------------------------
+   The Work section's arcade-cabinet layout: pixel marquee title, a bordered
+   spec strip, then a 2×2 grid of big 16:9 preview cards. Each card is a
+   frame + a footer bar (stat left in gold, category right in steel-blue),
+   matching the cabinet mock. The fourth slot holds the Forge Quest canvas. */
+
+.pv-marquee {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 14px 18px;
+  margin-bottom: 26px;
+}
+.pv-marquee__flag { color: var(--gold); font-size: 1.4rem; transform: translateY(2px); }
+.pv-marquee__title {
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: clamp(1.9rem, 5vw, 3.2rem);
+  letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--ink); line-height: 1;
+}
+.pv-marquee__spec {
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.82rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(127, 180, 201, 0.85);
+}
+
+.pv-strip {
+  display: flex; align-items: center; gap: 12px;
+  margin: 0 0 26px;
+  padding: 12px 16px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.85rem; letter-spacing: 0.05em;
+  color: rgba(127, 180, 201, 0.9);
+  background: rgba(9, 16, 24, 0.5);
+  border: 2px solid rgba(225, 224, 204, 0.14);
+}
+.pv-strip__gem { color: var(--gold); font-size: 0.9rem; }
+
+.pv-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 26px;
+}
+@media (min-width: 768px) { .pv-grid { grid-template-columns: 1fr 1fr; } }
+
+.pv-card {
+  opacity: 1;
+  animation: reel-in 420ms steps(6, end) backwards;
+  animation-delay: var(--d, 0ms);
+}
+@media (prefers-reduced-motion: reduce) { .pv-card { animation: none; } }
+
+.pv-frame {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  cursor: pointer;
+  background: #0E1822;
+  border: 3px solid rgba(227, 182, 92, 0.4);
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.5);
+  transition: border-color 120ms steps(3, end), transform 120ms steps(3, end);
+}
+.pv-frame:hover { border-color: var(--gold); transform: translate(-2px, -2px); }
+.pv-frame--game {
+  overflow: visible;
+  cursor: default;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.pv-frame--game:hover { transform: none; }
+.pv-frame__video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* The big center PLAY plate from the cabinet mock. */
+.pv-play {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 12px 34px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 1.05rem; letter-spacing: 0.18em; text-transform: uppercase;
+  color: #10202E;
+  background: var(--gold);
+  border: 3px solid rgba(16, 32, 46, 0.6);
+  outline: 2px solid rgba(227, 182, 92, 0.5);
+  outline-offset: 3px;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.55);
+  transition: opacity 140ms steps(3, end);
+}
+.pv-play.is-playing { opacity: 0; }
+.pv-frame:hover .pv-play.is-playing { opacity: 1; }
+
+/* Footer bar under each frame: stat left, category right. */
+.pv-foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  margin-top: 10px;
+  padding: 11px 14px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.82rem; letter-spacing: 0.08em; text-transform: uppercase;
+  background: rgba(9, 16, 24, 0.6);
+  border: 2px solid rgba(225, 224, 204, 0.14);
+}
+.pv-foot__stat { display: inline-flex; align-items: center; gap: 10px; color: var(--gold); }
+.pv-foot__icon { font-size: 0.95rem; }
+.pv-foot__title { color: rgba(127, 180, 201, 0.85); text-align: right; }
+
+/* --- Forge Quest -------------------------------------------------------- */
+.pv-laptop {
+  position: absolute; inset: 0;
+  perspective: 800px;
+}
+.pv-laptop__lid {
+  position: absolute; z-index: 2;
+  left: 0; top: 0;
+  width: 100%; aspect-ratio: 1672 / 620;
+  transform: perspective(700px) rotateX(-88deg) translateY(18px);
+  transform-origin: center bottom;
+  backface-visibility: hidden;
+}
+.pv-laptop.is-open .pv-laptop__lid {
+  animation: pv-laptop-open 700ms steps(8, end) forwards;
+}
+.pv-laptop__art {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: fill;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+.pv-laptop__display {
+  position: absolute; z-index: 3;
+  left: 18.9%; right: 18.9%;
+  top: 12.6%; bottom: 8%;
+  overflow: hidden;
+  background: #091018;
+}
+.pv-laptop__base {
+  position: absolute; z-index: 1;
+  left: 0; bottom: 0;
+  width: 100%; height: auto;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+@keyframes pv-laptop-open {
+  from { transform: perspective(700px) rotateX(-88deg) translateY(18px); }
+  to { transform: perspective(700px) rotateX(0) translateY(0); }
+}
+.pv-game {
+  position: absolute; inset: 0;
+  outline: none;
+  touch-action: manipulation;
+}
+.pv-game:focus-visible { box-shadow: inset 0 0 0 2px rgba(227, 182, 92, 0.6); }
+.pv-game__canvas {
+  width: 100%; height: 100%;
+  display: block;
+  image-rendering: pixelated;
+}
+.pv-boot {
+  position: absolute; inset: 0;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  color: var(--ink);
+  background: #17314A;
+}
+.pv-boot__bar {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 20px; padding: 0 8px;
+  font-size: 0.56rem; letter-spacing: 0.08em;
+  color: #10202E; background: var(--gold);
+}
+.pv-boot__desktop {
+  position: absolute; inset: 20px 0 0;
+  padding: 12px;
+  background-color: #17314A;
+  background-image:
+    linear-gradient(rgba(127, 180, 201, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(127, 180, 201, 0.08) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+.pv-boot__icon {
+  display: flex; width: 58px; flex-direction: column; align-items: center; gap: 3px;
+  text-align: center;
+}
+.pv-boot__folder {
+  position: relative;
+  width: 30px; height: 19px; margin-top: 6px;
+  background: var(--gold);
+  box-shadow: inset 0 -4px 0 rgba(16, 32, 46, 0.28);
+}
+.pv-boot__folder::before {
+  content: '';
+  position: absolute; left: 2px; top: -6px;
+  width: 13px; height: 7px;
+  background: var(--gold);
+}
+.pv-boot__folder i {
+  position: absolute; left: 4px; right: 4px; top: 6px;
+  height: 2px;
+  background: rgba(16, 32, 46, 0.42);
+}
+.pv-boot__icon small { font-size: 0.48rem; line-height: 1; }
+.pv-boot__cursor {
+  position: absolute; left: 84%; top: 76%;
+  width: 22px; height: 28px;
+  animation: pv-cursor-click 1400ms steps(8, end) forwards;
+}
+.pv-boot__cursor i {
+  position: absolute; inset: 0;
+  background: var(--ink);
+  clip-path: polygon(0 0, 0 82%, 27% 63%, 45% 100%, 61% 92%, 43% 58%, 76% 58%);
+  filter: drop-shadow(2px 2px 0 #091018);
+}
+.pv-boot__cursor b {
+  position: absolute; left: -6px; top: -6px;
+  width: 28px; height: 28px;
+  border: 3px solid var(--gold);
+  opacity: 0;
+  animation: pv-cursor-ring 1400ms steps(4, end) forwards;
+}
+.pv-terminal {
+  position: absolute; left: 14%; right: 14%; top: 18%; bottom: 16%;
+  background: #091018;
+  border: 2px solid rgba(227, 182, 92, 0.7);
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.55);
+  animation: pv-terminal-open 240ms steps(4, end) backwards;
+}
+.pv-terminal__bar {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 18px; padding: 0 7px;
+  font-size: 0.54rem; letter-spacing: 0.08em;
+  color: #10202E; background: var(--gold);
+}
+.pv-terminal__body {
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 10px;
+  font-size: clamp(0.45rem, 1.2vw, 0.68rem);
+  letter-spacing: 0.04em;
+  color: #9ED69A;
+}
+.pv-terminal__prompt { display: flex; white-space: nowrap; }
+.pv-terminal__command {
+  display: inline-block; width: 0;
+  overflow: hidden; white-space: nowrap;
+  animation: pv-terminal-type 850ms steps(20, end) 180ms forwards;
+}
+.pv-terminal__result {
+  opacity: 0;
+  animation: pv-terminal-line 1ms steps(1, end) forwards;
+}
+.pv-terminal__result--1 { animation-delay: 1.15s; }
+.pv-terminal__result--2 { animation-delay: 1.35s; }
+.pv-terminal__result--3 { animation-delay: 1.55s; }
+.pv-terminal__body i {
+  display: inline-block; width: 0.6em; height: 0.9em; margin-left: 3px;
+  vertical-align: -0.1em; background: #9ED69A;
+  animation: pv-terminal-cursor 500ms steps(1, end) infinite;
+}
+@keyframes pv-terminal-open {
+  from { opacity: 0; transform: scale(0.2); transform-origin: left top; }
+}
+@keyframes pv-cursor-click {
+  0%, 20% { left: 84%; top: 76%; transform: scale(1); }
+  38% { left: 62%; top: 54%; transform: scale(1); }
+  55% { left: 32%; top: 30%; transform: scale(1); }
+  68% { left: 42px; top: 24px; transform: scale(1); }
+  80% { left: 42px; top: 24px; transform: scale(0.72); }
+  100% { left: 42px; top: 24px; transform: scale(1); }
+}
+@keyframes pv-cursor-ring {
+  0%, 67% { opacity: 0; transform: scale(0.25); }
+  69% { opacity: 1; transform: scale(0.25); }
+  100% { opacity: 0; transform: scale(1.25); }
+}
+@keyframes pv-terminal-type { to { width: 20ch; } }
+@keyframes pv-terminal-line { to { opacity: 1; } }
+@keyframes pv-terminal-cursor { 50% { opacity: 0; } }
+.pv-game__overlay {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+  text-align: center;
+  background: rgba(11, 20, 30, 0.72);
+}
+.pv-game__title {
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 1.5rem; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--gold);
+  text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.6);
+}
+.pv-game__sub {
+  max-width: 34ch;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.78rem; letter-spacing: 0.06em;
+  color: rgba(225, 224, 204, 0.75);
+}
+.pv-game__btn {
+  margin-top: 4px;
+  padding: 10px 28px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.9rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: #10202E;
+  background: var(--gold);
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.5);
+  transition: transform 120ms steps(3, end);
+}
+.pv-game__btn:hover { transform: translate(-2px, -2px); }
+.pv-game__hint {
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.66rem; letter-spacing: 0.18em;
+  color: rgba(225, 224, 204, 0.4);
+}
+@media (prefers-reduced-motion: reduce) {
+  .pv-laptop__lid { animation: none !important; transform: none; }
+  .pv-boot__cursor, .pv-boot__cursor b, .pv-terminal, .pv-terminal__command,
+  .pv-terminal__result, .pv-terminal__body i { animation: none; }
+  .pv-terminal__command { width: auto; }
+  .pv-terminal__result { opacity: 1; }
+}
+
+/* Book-a-call strip under the grid. */
+.pv-cta {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px 22px;
+  margin-top: 34px;
+  padding: 16px 20px;
+  border: 2px dashed rgba(227, 182, 92, 0.35);
+  background: rgba(19, 31, 43, 0.55);
+}
+.pv-cta__copy {
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.85rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: rgba(225, 224, 204, 0.7);
+}
+.pv-cta__btn { width: auto; }
