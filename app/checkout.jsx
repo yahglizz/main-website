@@ -116,6 +116,9 @@ function CheckoutModal({ plan, mode, onClose }) {
         <div className="co-head">
           <div className="co-kicker">{isShowcase ? 'Book a showcase' : 'Start this build'}</div>
           <h3 id="co-title" className="co-title">{plan.title}</h3>
+          {/* Mirrors the card: the modal must not present as a fixed quote a
+              number the card called a starting point. */}
+          {!isShowcase && <div className="price-from">Starting at</div>}
           <div className="co-price">
             {isShowcase ? 'Free · 15 minutes' : plan.price}
             {!isShowcase && plan.priceSub && <span className="co-price__sub">{plan.priceSub}</span>}

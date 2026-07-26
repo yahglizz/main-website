@@ -436,6 +436,9 @@ function PlanCard({ plan, i, active, onPick }) {
         <div className="text-[10px] uppercase tracking-[0.24em] text-primary/45">{plan.title}</div>
       </div>
 
+      {/* Every figure on this page is an entry point, not a quote — scope moves
+          the number. Said once above the price so no tier reads as fixed. */}
+      <div className="price-from">Starting at</div>
       <div className="mb-1">
         <span className="text-4xl md:text-5xl font-medium tracking-tighter text-ink">{plan.price}</span>
       </div>
@@ -730,6 +733,7 @@ function BundleCard({ onPick }) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           <div>
             <div className="text-[10px] uppercase tracking-[0.24em] mb-3" style={{ color: 'rgba(229,197,128,0.55)' }}>Complete Business Package</div>
+            <div className="price-from">Starting at</div>
             <div className="text-4xl md:text-5xl font-medium tracking-tighter text-ink mb-2" style={{ lineHeight: 1 }}>$1,200</div>
             <div className="text-sm mb-6" style={{ color: 'rgba(222,219,200,0.4)' }}>One-time · Delivered in under 1 week</div>
             <p className="text-sm md:text-base leading-relaxed mb-8" style={{ color: 'rgba(222,219,200,0.7)' }}>
@@ -759,7 +763,7 @@ function BundleCard({ onPick }) {
               ))}
             </ul>
             <div className="mt-8 pt-6 border-t flex items-center gap-6 text-xs flex-wrap" style={{ borderColor: 'rgba(229,197,128,0.12)', color: 'rgba(222,219,200,0.38)' }}>
-              <span className="flex items-center gap-1.5"><Check size={10} /> Fixed pricing</span>
+              <span className="flex items-center gap-1.5"><Check size={10} /> Upfront pricing</span>
               <span className="flex items-center gap-1.5"><Check size={10} /> No retainer lock-in</span>
               <span className="flex items-center gap-1.5"><Check size={10} /> Delivered in under 1 week</span>
             </div>
@@ -813,6 +817,7 @@ function BrandPackageCard({ onPick }) {
             <div className="text-[10px] uppercase tracking-[0.24em] mb-3" style={{ color: 'rgba(229,197,128,0.55)' }}>
               Complete Brand Setup Package
             </div>
+            <div className="price-from">Starting at</div>
             <div className="text-5xl md:text-6xl font-medium tracking-tighter text-ink mb-1" style={{ lineHeight: 1 }}>
               $800
             </div>
@@ -834,7 +839,7 @@ function BrandPackageCard({ onPick }) {
             </div>
 
             <p className="text-[11px] mt-4" style={{ color: 'rgba(222,219,200,0.3)' }}>
-              Fixed price · No hidden fees · Revisions included
+              Starting price · No hidden fees · Revisions included
             </p>
           </div>
 
@@ -861,7 +866,7 @@ function BrandPackageCard({ onPick }) {
               className="mt-7 pt-5 border-t flex items-center gap-5 text-xs flex-wrap"
               style={{ borderColor: 'rgba(229,197,128,0.12)', color: 'rgba(222,219,200,0.38)' }}
             >
-              <span className="flex items-center gap-1.5"><Check size={10} /> Fixed $800</span>
+              <span className="flex items-center gap-1.5"><Check size={10} /> From $800</span>
               <span className="flex items-center gap-1.5"><Check size={10} /> Revisions included</span>
               <span className="flex items-center gap-1.5"><Check size={10} /> Delivered in under 1 week</span>
             </div>
@@ -1006,7 +1011,7 @@ function Pricing() {
         <div className="mt-14 md:mt-20 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs text-primary/38 border-t border-white/5 pt-7">
           <div>All plans include async communication, milestone check-ins, and a clean handoff package.</div>
           <div className="flex items-center gap-5 flex-wrap">
-            <span className="flex items-center gap-1.5"><Check size={11} /> Fixed pricing</span>
+            <span className="flex items-center gap-1.5"><Check size={11} /> Upfront pricing</span>
             <span className="flex items-center gap-1.5"><Check size={11} /> No retainer lock-in</span>
             <span className="flex items-center gap-1.5"><Check size={11} /> Delivered in under 1 week</span>
           </div>

@@ -1376,3 +1376,15 @@ button:focus-visible, a:focus-visible {
   color: rgba(225, 224, 204, 0.7);
 }
 .pv-cta__btn { width: auto; }
+
+/* "Starting at" eyebrow above every price. Every figure on the site is an
+   entry point — scope moves the number — so the label sits with the price
+   itself rather than in fine print somewhere below it. */
+.price-from {
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(227, 182, 92, 0.75);
+  margin-bottom: 2px;
+}

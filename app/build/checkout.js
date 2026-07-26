@@ -142,7 +142,9 @@ function CheckoutModal({
   }, isShowcase ? 'Book a showcase' : 'Start this build'), /*#__PURE__*/React.createElement("h3", {
     id: "co-title",
     className: "co-title"
-  }, plan.title), /*#__PURE__*/React.createElement("div", {
+  }, plan.title), !isShowcase && /*#__PURE__*/React.createElement("div", {
+    className: "price-from"
+  }, "Starting at"), /*#__PURE__*/React.createElement("div", {
     className: "co-price"
   }, isShowcase ? 'Free · 15 minutes' : plan.price, !isShowcase && plan.priceSub && /*#__PURE__*/React.createElement("span", {
     className: "co-price__sub"

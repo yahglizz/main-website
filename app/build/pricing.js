@@ -353,6 +353,8 @@ function PlanCard({
   }, /*#__PURE__*/React.createElement("div", {
     className: "text-[10px] uppercase tracking-[0.24em] text-primary/45"
   }, plan.title)), /*#__PURE__*/React.createElement("div", {
+    className: "price-from"
+  }, "Starting at"), /*#__PURE__*/React.createElement("div", {
     className: "mb-1"
   }, /*#__PURE__*/React.createElement("span", {
     className: "text-4xl md:text-5xl font-medium tracking-tighter text-ink"
@@ -673,6 +675,8 @@ function BundleCard({
       color: 'rgba(229,197,128,0.55)'
     }
   }, "Complete Business Package"), /*#__PURE__*/React.createElement("div", {
+    className: "price-from"
+  }, "Starting at"), /*#__PURE__*/React.createElement("div", {
     className: "text-4xl md:text-5xl font-medium tracking-tighter text-ink mb-2",
     style: {
       lineHeight: 1
@@ -736,7 +740,7 @@ function BundleCard({
     className: "flex items-center gap-1.5"
   }, /*#__PURE__*/React.createElement(Check, {
     size: 10
-  }), " Fixed pricing"), /*#__PURE__*/React.createElement("span", {
+  }), " Upfront pricing"), /*#__PURE__*/React.createElement("span", {
     className: "flex items-center gap-1.5"
   }, /*#__PURE__*/React.createElement(Check, {
     size: 10
@@ -798,6 +802,8 @@ function BrandPackageCard({
       color: 'rgba(229,197,128,0.55)'
     }
   }, "Complete Brand Setup Package"), /*#__PURE__*/React.createElement("div", {
+    className: "price-from"
+  }, "Starting at"), /*#__PURE__*/React.createElement("div", {
     className: "text-5xl md:text-6xl font-medium tracking-tighter text-ink mb-1",
     style: {
       lineHeight: 1
@@ -829,7 +835,7 @@ function BrandPackageCard({
     style: {
       color: 'rgba(222,219,200,0.3)'
     }
-  }, "Fixed price \xB7 No hidden fees \xB7 Revisions included")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  }, "Starting price \xB7 No hidden fees \xB7 Revisions included")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     className: "text-[10px] uppercase tracking-[0.24em] mb-4",
     style: {
       color: 'rgba(229,197,128,0.5)'
@@ -861,7 +867,7 @@ function BrandPackageCard({
     className: "flex items-center gap-1.5"
   }, /*#__PURE__*/React.createElement(Check, {
     size: 10
-  }), " Fixed $800"), /*#__PURE__*/React.createElement("span", {
+  }), " From $800"), /*#__PURE__*/React.createElement("span", {
     className: "flex items-center gap-1.5"
   }, /*#__PURE__*/React.createElement(Check, {
     size: 10
@@ -1013,7 +1019,7 @@ function Pricing() {
     className: "flex items-center gap-1.5"
   }, /*#__PURE__*/React.createElement(Check, {
     size: 11
-  }), " Fixed pricing"), /*#__PURE__*/React.createElement("span", {
+  }), " Upfront pricing"), /*#__PURE__*/React.createElement("span", {
     className: "flex items-center gap-1.5"
   }, /*#__PURE__*/React.createElement(Check, {
     size: 11
