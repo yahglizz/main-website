@@ -1150,6 +1150,146 @@ button:focus-visible, a:focus-visible {
 .pv-foot__icon { font-size: 0.95rem; }
 .pv-foot__title { color: rgba(127, 180, 201, 0.85); text-align: right; }
 
+/* --- About section ------------------------------------------------------
+   Story left, film right. Single column until there is genuinely room for
+   two — the step list and the video both stop being readable much below
+   900px side by side. */
+.ab-grid { display: grid; grid-template-columns: 1fr; gap: 44px; }
+@media (min-width: 900px) {
+  .ab-grid { grid-template-columns: 5fr 7fr; gap: 52px; align-items: center; }
+}
+
+.ab-steps { margin-top: 30px; display: flex; flex-direction: column; gap: 2px; }
+.ab-step {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 13px 16px;
+  background: rgba(9, 16, 24, 0.45);
+  border: 2px solid rgba(225, 224, 204, 0.12);
+  border-left: 3px solid rgba(227, 182, 92, 0.55);
+  transition: border-color 120ms steps(3, end), transform 120ms steps(3, end);
+  animation: reel-in 420ms steps(6, end) backwards;
+  animation-delay: var(--d, 0ms);
+}
+.ab-step:hover { border-left-color: var(--gold); transform: translateX(3px); }
+.ab-step__n {
+  flex: none;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.9rem; letter-spacing: 0.08em;
+  color: var(--gold);
+  padding-top: 1px;
+}
+.ab-step__t {
+  display: block;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.92rem; letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--ink);
+}
+.ab-step__d {
+  display: block; margin-top: 5px;
+  font-size: 0.83rem; line-height: 1.6;
+  color: rgba(222, 219, 200, 0.5);
+}
+
+.ab-nudge {
+  display: flex; align-items: flex-start; gap: 10px;
+  margin-top: 22px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.8rem; letter-spacing: 0.07em; line-height: 1.7;
+  color: rgba(127, 180, 201, 0.9);
+  animation: reel-in 420ms steps(6, end) 340ms backwards;
+}
+.ab-nudge__gem { color: var(--gold); flex: none; }
+
+/* "Watch me" plate, pointing down at the frame. Reuses the world's hint
+   arrow motion so the two read as the same gesture. */
+.ab-media { display: flex; flex-direction: column; align-items: center; }
+.ab-watch {
+  display: inline-flex; flex-direction: column; align-items: center; gap: 8px;
+  margin-bottom: 18px;
+}
+.ab-watch__label {
+  padding: 10px 22px;
+  background: rgba(16, 27, 38, 0.86);
+  border: 2px solid rgba(227, 182, 92, 0.42);
+  box-shadow: 5px 5px 0 rgba(9, 16, 24, 0.5);
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.95rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--gold);
+}
+.ab-watch__arrow {
+  width: 0; height: 0;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-top: 12px solid var(--gold);
+  animation: hint-drop 1.5s steps(3, end) infinite;
+}
+.ab-frame { width: 100%; }
+.ab-media .pv-foot { width: 100%; }
+@media (prefers-reduced-motion: reduce) {
+  .ab-watch__arrow { animation: none; }
+  .ab-step, .ab-nudge { animation: none; transition: none; }
+}
+
+/* --- The guardian ------------------------------------------------------
+   The winged anvil rides along with the visitor for the whole page. Fixed to
+   the viewport, so it belongs to no section and survives every scroll.
+
+   Layered because each level wants its own `transform` and an element only
+   gets one: `__lag` is driven by JS (trails the scroll, then catches up),
+   `__hover` is the idle drift, `__art` is the wingbeat.
+
+   Sits above the sections and the world's topbar (50) but below the checkout
+   overlay (9000) — a companion should never fly over a dialog. */
+.cf-guardian {
+  position: fixed;
+  /* Left gutter: the world's route rail owns the right edge, and every
+     section below is a centred container, so this column is the one strip of
+     the page that is empty the whole way down. */
+  left: 26px;
+  top: 62%;
+  width: 50px; height: 50px;
+  z-index: 60;
+  pointer-events: none;
+  filter: drop-shadow(3px 3px 0 rgba(0, 0, 0, 0.45));
+}
+.cf-guardian__lag,
+.cf-guardian__hover { display: block; width: 100%; height: 100%; }
+.cf-guardian__lag { will-change: transform; }
+
+/* The idle drift is the one place on this site that glides instead of
+   stepping: a hovering thing that snapped between whole pixels would read as
+   stuttering, not floating. The wingbeat below carries the pixel character. */
+.cf-guardian__hover { animation: cf-guardian-hover 7s ease-in-out infinite; }
+
+.cf-guardian__art {
+  display: block;
+  width: 100%; height: 100%;
+  image-rendering: pixelated;
+  /* Two-frame wingbeat. A hard `steps(2)` squash is how a 16-bit sprite
+     flaps — an eased scale would read as breathing, not flying. */
+  animation: cf-wingbeat 240ms steps(2, end) infinite;
+}
+
+/* The widest section container is max-w-7xl (1280px). Below ~1440px viewport
+   that container leaves no gutter, and the guardian would be flying over the
+   copy instead of beside it — so it stands down rather than get in the way. */
+@media (max-width: 1439px) { .cf-guardian { display: none; } }
+
+@keyframes cf-wingbeat {
+  0%   { transform: scaleX(1); }
+  50%  { transform: scaleX(0.45); }
+  100% { transform: scaleX(1); }
+}
+@keyframes cf-guardian-hover {
+  0%, 100% { transform: translate(0, 0); }
+  25%      { transform: translate(-9px, -13px); }
+  50%      { transform: translate(5px, -19px); }
+  75%      { transform: translate(-6px, -7px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cf-guardian__hover, .cf-guardian__art { animation: none; }
+}
+
 /* --- Forge Quest -------------------------------------------------------- */
 .pv-laptop {
   position: absolute; inset: 0;

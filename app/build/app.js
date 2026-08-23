@@ -33,7 +33,7 @@ function App() {
   }, []);
   return /*#__PURE__*/React.createElement("main", {
     className: "bg-black text-ink"
-  }, /*#__PURE__*/React.createElement(motion.div, {
+  }, /*#__PURE__*/React.createElement(Guardian, null), /*#__PURE__*/React.createElement(motion.div, {
     initial: {
       opacity: 0
     },
@@ -44,7 +44,7 @@ function App() {
       duration: 0.6,
       ease: 'easeOut'
     }
-  }, /*#__PURE__*/React.createElement(Pricing, null), /*#__PURE__*/React.createElement(Work, null), /*#__PURE__*/React.createElement(Testimonials, null), /*#__PURE__*/React.createElement(Contact, null)));
+  }, /*#__PURE__*/React.createElement(About, null), /*#__PURE__*/React.createElement(Pricing, null), /*#__PURE__*/React.createElement(Work, null), /*#__PURE__*/React.createElement(Testimonials, null), /*#__PURE__*/React.createElement(Contact, null)));
 }
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(/*#__PURE__*/React.createElement(App, null));

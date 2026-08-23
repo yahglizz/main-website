@@ -34,6 +34,10 @@ function App() {
 
   return (
     <main className="bg-black text-ink">
+      {/* Rides along with the viewport for the whole page, so it sits outside
+          the sections rather than inside any one of them. */}
+      <Guardian />
+
       {/* The hero is now the scroll world (app/world.js), mounted above the
           React root in index.html. Everything below is unchanged. */}
       <motion.div
@@ -41,6 +45,7 @@ function App() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
       >
+        <About />
         <Pricing />
         <Work />
         <Testimonials />
