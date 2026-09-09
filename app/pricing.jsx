@@ -790,14 +790,10 @@ function BrandPackageCard({ onPick }) {
 
       {/* Card body */}
       <div
-        className="relative grain rounded-3xl overflow-hidden p-8 md:p-10"
-        style={{ background: 'linear-gradient(135deg, #1d1b10, #161510 50%, #1a1913)' }}
+        className="pricing-featured relative grain rounded-3xl overflow-hidden p-8 md:p-10"
       >
-        {/* Radial glow */}
-        <div
-          className="absolute top-0 right-0 w-[460px] h-[460px] pointer-events-none"
-          style={{ background: 'radial-gradient(circle at center, rgba(229,197,128,0.1), transparent 65%)', transform: 'translate(25%, -30%)' }}
-        />
+        <div className="pricing-featured__veil" aria-hidden="true" />
+        <div className="pricing-featured__content">
 
         {/* Badge */}
         <div className="mb-6">
@@ -872,6 +868,7 @@ function BrandPackageCard({ onPick }) {
             </div>
           </div>
 
+        </div>
         </div>
       </div>
     </motion.div>

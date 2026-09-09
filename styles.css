@@ -49,6 +49,23 @@ body {
    artwork, where a near-black veil is still what we want. */
 .bg-black { background-color: var(--void) !important; }
 
+/* The featured offer continues the cloud-city flight while its copy stays a
+   real HTML layer above the art. */
+.pricing-featured {
+  background: var(--void) url('assets/hero/pricing-forge-bg.png') right center / cover no-repeat;
+}
+.pricing-featured__veil {
+  position: absolute;
+  inset: 0;
+  background: rgba(27, 40, 54, 0.64);
+  pointer-events: none;
+}
+.pricing-featured__content {
+  position: relative;
+  z-index: 1;
+  text-shadow: 2px 2px 0 rgba(27, 40, 54, 0.78);
+}
+
 /* --- Notched corners -------------------------------------------------
    Real pixel UI doesn't round corners, it steps them. clip-path cuts a
    4px notch out of each corner so buttons and cards read as sprites

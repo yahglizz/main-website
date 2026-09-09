@@ -773,17 +773,13 @@ function BrandPackageCard({
       background: 'linear-gradient(135deg, rgba(229,197,128,0.6), rgba(222,219,200,0.08) 50%, rgba(229,197,128,0.4))'
     }
   }), /*#__PURE__*/React.createElement("div", {
-    className: "relative grain rounded-3xl overflow-hidden p-8 md:p-10",
-    style: {
-      background: 'linear-gradient(135deg, #1d1b10, #161510 50%, #1a1913)'
-    }
+    className: "pricing-featured relative grain rounded-3xl overflow-hidden p-8 md:p-10"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "absolute top-0 right-0 w-[460px] h-[460px] pointer-events-none",
-    style: {
-      background: 'radial-gradient(circle at center, rgba(229,197,128,0.1), transparent 65%)',
-      transform: 'translate(25%, -30%)'
-    }
+    className: "pricing-featured__veil",
+    "aria-hidden": "true"
   }), /*#__PURE__*/React.createElement("div", {
+    className: "pricing-featured__content"
+  }, /*#__PURE__*/React.createElement("div", {
     className: "mb-6"
   }, /*#__PURE__*/React.createElement("span", {
     className: "inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.28em] px-3 py-1.5 rounded-full border font-bold",
@@ -875,7 +871,7 @@ function BrandPackageCard({
     className: "flex items-center gap-1.5"
   }, /*#__PURE__*/React.createElement(Check, {
     size: 10
-  }), " Delivered in under 1 week"))))));
+  }), " Delivered in under 1 week")))))));
 }
 
 // ── MAIN SECTION ──────────────────────────────────────────
