@@ -1,36 +1,64 @@
-/* Root app — scroll spy + section mounting */
+/* Root app — section order, the pop-up lead form, and the sticky CTA.
+
+   Order: hero (static HTML) → Pricing → The Math → Our Work → About →
+   Contact → FAQ (static HTML, slotted in by hero.js) → footer. */
+
+/* Any link to #contact, or any element with data-lead="<topic>", opens the
+   pop-up form instead of scrolling. One listener on the document covers the
+   static hero and FAQ markup too, which React never rendered. */
+function useLeadTriggers(open) {
+  React.useEffect(() => {
+    const onClick = (e) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
+      const el = e.target.closest('a[href="#contact"], [data-lead]');
+      if (!el) return;
+      e.preventDefault();
+      open(el.dataset.lead || '');
+    };
+    document.addEventListener('click', onClick);
+    window.openLead = open;
+    return () => { document.removeEventListener('click', onClick); delete window.openLead; };
+  }, [open]);
+}
+
+/* Shows once the hero is off screen; hides while the Contact form is on
+   screen, since the form is already right there. */
+function StickyCta({ hidden }) {
+  const [past, setPast] = React.useState(false);
+  const [nearForm, setNearForm] = React.useState(false);
+  React.useEffect(() => {
+    const ios = [];
+    const watch = (id, fn, threshold) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const io = new IntersectionObserver(([e]) => fn(e.isIntersecting), { threshold });
+      io.observe(el); ios.push(io);
+    };
+    watch('top', (on) => setPast(!on), 0);
+    watch('contact', setNearForm, 0.15);
+    return () => ios.forEach((io) => io.disconnect());
+  }, []);
+  const show = past && !nearForm && !hidden;
+  return (
+    <button
+      type="button"
+      className={'cf-sticky' + (show ? ' is-on' : '')}
+      data-lead=""
+      aria-hidden={!show}
+      tabIndex={show ? 0 : -1}
+    >
+      <span className="cf-sticky__dot" aria-hidden="true" />
+      Get my free growth plan
+      <ArrowRight size={16} />
+    </button>
+  );
+}
 
 function App() {
-  const [active, setActive] = React.useState('home');
-
-  const nav = (id) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const y = el.getBoundingClientRect().top + window.scrollY - 8;
-    window.scrollTo({ top: y, behavior: 'smooth' });
-  };
-
-  // No scroll lock any more — the old hero held the page still during its intro
-  // video. The scroll world IS the intro now, and it needs scroll from frame one.
-
-  React.useEffect(() => {
-    const ids = ['pricing', 'work', 'testimonials', 'contact'];
-    const io = new IntersectionObserver(
-      (entries) => {
-        // pick the entry with the largest intersection ratio that's intersecting
-        const visible = entries
-          .filter(e => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-        if (visible[0]) setActive(visible[0].target.id);
-      },
-      { rootMargin: '-40% 0px -50% 0px', threshold: [0, 0.25, 0.5, 0.75, 1] }
-    );
-    ids.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) io.observe(el);
-    });
-    return () => io.disconnect();
-  }, []);
+  const [lead, setLead] = React.useState(null);   // null = closed, string = topic
+  const openLead = React.useCallback((topic) => setLead(topic || ''), []);
+  const closeLead = React.useCallback(() => setLead(null), []);
+  useLeadTriggers(openLead);
 
   return (
     <main className="bg-black text-ink">
@@ -38,19 +66,23 @@ function App() {
           the sections rather than inside any one of them. */}
       <Guardian />
 
-      {/* The hero is now the scroll world (app/world.js), mounted above the
-          React root in index.html. Everything below is unchanged. */}
+      {/* The hero is static HTML in index.html (driven by app/hero.js), above
+          the React root, so crawlers read it without running JS. */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
       >
-        <About />
         <Pricing />
+        <RoiMath />
         <Work />
-        <Testimonials />
+        <About />
         <Contact />
+        <SiteFooter />
       </motion.div>
+
+      <StickyCta hidden={lead !== null} />
+      {lead !== null && <LeadModal topic={lead} onClose={closeLead} />}
     </main>
   );
 }

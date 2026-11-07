@@ -32,19 +32,22 @@ const PREVIEW_TRACKS = [{
     title: 'Barbershop Brand & Booking',
     stat: '2× Online Bookings',
     icon: '✂',
-    src: 'more%20previews/barbershop.mov'
+    src: 'assets/work/barbershop.mp4',
+    poster: 'assets/work/barbershop.jpg'
   }, {
     id: 'childcare',
     title: 'Childcare Center',
     stat: '3× Inquiry Volume',
     icon: '☀',
-    src: 'more%20previews/childcare.mov'
+    src: 'assets/work/childcare.mp4',
+    poster: 'assets/work/childcare.jpg'
   }, {
     id: 'rental',
     title: 'Short-Term Rental',
     stat: '+85% Direct Bookings',
     icon: '⌂',
-    src: 'more%20previews/rental.mov'
+    src: 'assets/work/rental.mp4',
+    poster: 'assets/work/rental.jpg'
   }, {
     id: 'forge-quest',
     title: 'Bonus Game Preview',
@@ -59,28 +62,28 @@ const PREVIEW_TRACKS = [{
   blurb: 'The systems behind the site — follow-up, booking, dispatch and reviews, running without you.',
   slots: [{
     id: 'followup',
-    title: 'AI Follow-Up for Realtors',
-    stat: 'Reply time: 9.2 hrs → 47 s',
+    title: 'AI Lead Follow-Up',
+    stat: 'Live demo on a call',
     icon: '⚡',
-    src: 'assets/reels/followup.mp4'
+    live: 'Watch new leads get a reply in seconds'
   }, {
     id: 'medspa',
-    title: 'Med Spa Booking Funnel',
-    stat: '48% Booking Conversion',
+    title: 'Booking Funnel',
+    stat: 'Live demo on a call',
     icon: '✚',
-    src: 'assets/reels/medspa.mp4'
+    live: 'See a booking flow fill a calendar'
   }, {
     id: 'dispatch',
-    title: 'Home Services Dispatch',
-    stat: '14 hrs/week Saved',
+    title: 'Job Dispatch & Reminders',
+    stat: 'Live demo on a call',
     icon: '🔧',
-    src: 'assets/reels/dispatch.mp4'
+    live: 'See jobs routed and reminders sent'
   }, {
     id: 'dashboard',
-    title: 'Client Ops Dashboard',
-    stat: '30 Agents Onboarded',
+    title: 'Owner Dashboard',
+    stat: 'Live demo on a call',
     icon: '▦',
-    src: 'assets/reels/dashboard.mp4'
+    live: 'Walk through a live pipeline'
   }]
 }];
 
@@ -566,7 +569,8 @@ function PreviewCard({
   const toggle = () => {
     const v = videoRef.current;
     if (!v || broken) return;
-    if (v.paused) v.play().then(() => setPlaying(true)).catch(() => setBroken(true));else {
+    // Hover may already be previewing it; a click means "play" until clicked again.
+    if (!playing) v.play().then(() => setPlaying(true)).catch(() => setBroken(true));else {
       v.pause();
       setPlaying(false);
     }
@@ -598,7 +602,23 @@ function PreviewCard({
       className: "pv-laptop__base",
       alt: "",
       draggable: "false"
-    }))) : /*#__PURE__*/React.createElement("button", {
+    }))) : slot.live ? /*#__PURE__*/React.createElement("button", {
+      type: "button",
+      className: "pv-frame pv-frame--live",
+      "data-lead": "AI Automation"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "pv-live"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "pv-live__icon",
+      "aria-hidden": "true"
+    }, slot.icon), /*#__PURE__*/React.createElement("span", {
+      className: "pv-live__line"
+    }, slot.live), /*#__PURE__*/React.createElement("span", {
+      className: "pv-live__cta"
+    }, "Book a live demo \u2192")), /*#__PURE__*/React.createElement("span", {
+      className: "reel__scan",
+      "aria-hidden": "true"
+    })) : /*#__PURE__*/React.createElement("button", {
       type: "button",
       className: "pv-frame",
       onClick: toggle,
@@ -622,6 +642,7 @@ function PreviewCard({
       ref: videoRef,
       className: "pv-frame__video",
       src: slot.src,
+      poster: slot.poster,
       muted: true,
       loop: true,
       playsInline: true,
@@ -651,7 +672,7 @@ function Work() {
   return /*#__PURE__*/React.createElement("section", {
     id: "work",
     "data-screen-label": "03 Work",
-    className: "relative bg-black py-24 md:py-32"
+    className: "relative bg-black py-16 md:py-32"
   }, /*#__PURE__*/React.createElement("div", {
     className: "absolute inset-0 bg-noise opacity-70 pointer-events-none"
   }), /*#__PURE__*/React.createElement("div", {

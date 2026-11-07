@@ -231,6 +231,207 @@ function CheckoutModal({
     className: "co-fineprint"
   }, "No card is taken here. We confirm the scope first, then send a payment link."))))));
 }
+
+/* The lead form as a pop-up. Every "book a call" button on the page opens
+   this instead of scrolling to Contact, so the form is one tap away from
+   wherever the visitor decided. Same Web3Forms inbox as everything else. */
+const LEAD_TOPICS = ['Website', 'Ads', 'AI Automation', 'Full System', 'Custom App', 'Not sure'];
+function LeadModal({
+  topic,
+  onClose
+}) {
+  const [form, setForm] = useStateCo({
+    name: '',
+    email: '',
+    phone: '',
+    help: LEAD_TOPICS.includes(topic) ? topic : '',
+    note: ''
+  });
+  const [errors, setErrors] = useStateCo({});
+  const [sending, setSending] = useStateCo(false);
+  const [sent, setSent] = useStateCo(false);
+  const [failed, setFailed] = useStateCo('');
+  const panelRef = useRefCo(null);
+  const firstRef = useRefCo(null);
+  const set = k => e => setForm(f => ({
+    ...f,
+    [k]: e.target.value
+  }));
+  useEffectCo(() => {
+    const back = document.activeElement;
+    const onKey = e => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKey);
+    const prev = document.documentElement.style.overflow;
+    document.documentElement.style.overflow = 'hidden';
+    // Straight into the first field: the visitor came here to type.
+    (firstRef.current || panelRef.current)?.focus({
+      preventScroll: true
+    });
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.documentElement.style.overflow = prev;
+      if (back && back.focus) back.focus({
+        preventScroll: true
+      });
+    };
+  }, [onClose]);
+  const submit = async e => {
+    e.preventDefault();
+    const err = {};
+    if (!form.name.trim()) err.name = 'required';
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email.trim())) err.email = 'valid email needed';
+    if (!form.help) err.help = 'pick one';
+    setErrors(err);
+    if (sending || Object.keys(err).length) return;
+    setSending(true);
+    setFailed('');
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
+        body: JSON.stringify({
+          access_key: CHECKOUT_FORM_KEY,
+          subject: `New lead — ${form.help} — ${form.name}`,
+          from_name: 'ClientForge site',
+          name: form.name,
+          email: form.email,
+          replyto: form.email,
+          phone: form.phone,
+          interested_in: form.help,
+          source: 'Pop-up form',
+          message: form.note || '(no message)',
+          botcheck: ''
+        })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data.success === false) throw new Error(data.message || 'HTTP ' + res.status);
+      setSent(true);
+    } catch {
+      setFailed(`Couldn't send that. Email us at ${CONTACT_EMAIL} and we'll pick it up.`);
+    } finally {
+      setSending(false);
+    }
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "co-backdrop",
+    onMouseDown: e => {
+      if (e.target === e.currentTarget) onClose();
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    ref: panelRef,
+    className: "co-panel lead-panel",
+    role: "dialog",
+    "aria-modal": "true",
+    "aria-labelledby": "lead-title",
+    tabIndex: -1
+  }, /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "co-close",
+    onClick: onClose,
+    "aria-label": "Close"
+  }, /*#__PURE__*/React.createElement(X, {
+    size: 16
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "co-head"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "co-kicker"
+  }, "Free \xB7 20 minutes \xB7 No pressure"), /*#__PURE__*/React.createElement("h3", {
+    id: "lead-title",
+    className: "co-title"
+  }, "Get your free growth plan"), /*#__PURE__*/React.createElement("div", {
+    className: "co-promise"
+  }, /*#__PURE__*/React.createElement(Check, {
+    size: 12,
+    strokeWidth: 3
+  }), "We reply within the business day, usually within 4 hours")), sent ? /*#__PURE__*/React.createElement("div", {
+    className: "co-done"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "co-done__mark"
+  }, /*#__PURE__*/React.createElement(Check, {
+    size: 22,
+    strokeWidth: 3
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "co-done__title"
+  }, "Got it, ", form.name.trim().split(' ')[0], "."), /*#__PURE__*/React.createElement("p", {
+    className: "co-done__body"
+  }, "Your request is in. Check ", form.email, ": we'll reply with a plan or a call invite within the business day."), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "co-btn co-btn--primary",
+    onClick: onClose
+  }, "Close")) : /*#__PURE__*/React.createElement("form", {
+    onSubmit: submit,
+    className: "co-form",
+    noValidate: true
+  }, /*#__PURE__*/React.createElement(CoField, {
+    label: "Name",
+    required: true,
+    error: errors.name
+  }, /*#__PURE__*/React.createElement("input", {
+    ref: firstRef,
+    className: "co-input",
+    value: form.name,
+    onChange: set('name'),
+    autoComplete: "name"
+  })), /*#__PURE__*/React.createElement(CoField, {
+    label: "Email",
+    required: true,
+    error: errors.email
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "co-input",
+    type: "email",
+    value: form.email,
+    onChange: set('email'),
+    autoComplete: "email"
+  })), /*#__PURE__*/React.createElement(CoField, {
+    label: "Phone"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "co-input",
+    type: "tel",
+    value: form.phone,
+    onChange: set('phone'),
+    autoComplete: "tel"
+  })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "co-label"
+  }, "What do you need?", /*#__PURE__*/React.createElement("span", {
+    className: "text-gold"
+  }, "*"), errors.help && /*#__PURE__*/React.createElement("span", {
+    className: "co-error"
+  }, errors.help)), /*#__PURE__*/React.createElement("div", {
+    className: "lead-topics",
+    role: "group",
+    "aria-label": "What do you need?"
+  }, LEAD_TOPICS.map(t => /*#__PURE__*/React.createElement("button", {
+    key: t,
+    type: "button",
+    className: 'lead-topic' + (form.help === t ? ' is-on' : ''),
+    "aria-pressed": form.help === t,
+    onClick: () => setForm(f => ({
+      ...f,
+      help: t
+    }))
+  }, t)))), /*#__PURE__*/React.createElement(CoField, {
+    label: "What are you trying to grow or fix?"
+  }, /*#__PURE__*/React.createElement("textarea", {
+    className: "co-input",
+    rows: 3,
+    value: form.note,
+    onChange: set('note')
+  })), failed && /*#__PURE__*/React.createElement("div", {
+    className: "co-fail"
+  }, failed), /*#__PURE__*/React.createElement("button", {
+    type: "submit",
+    className: "co-btn co-btn--primary",
+    disabled: sending
+  }, sending ? 'Sending…' : 'Send my request'), /*#__PURE__*/React.createElement("p", {
+    className: "co-fineprint"
+  }, "No spam, no sales pressure. A real person replies."))));
+}
 Object.assign(window, {
-  CheckoutModal
+  CheckoutModal,
+  LeadModal
 });

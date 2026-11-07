@@ -1,4 +1,4 @@
-/* Section 01: About — the promo video plus a short account of how the shop
+/* Section 04: About — the promo video plus a short account of how the shop
    actually operates, so a first-time visitor understands the company before
    they hit the price list.
 
@@ -8,7 +8,7 @@
 
 function About() {
   return (
-    <section id="about" data-screen-label="01 About" className="relative bg-black py-24 md:py-32">
+    <section id="about" data-screen-label="04 About" className="relative bg-black py-16 md:py-32">
       <div className="absolute inset-0 bg-noise opacity-70 pointer-events-none" />
 
 
@@ -18,7 +18,7 @@ function About() {
         <div className="flex items-center justify-between mb-12 md:mb-16">
           <div className="flex items-center gap-3 text-[10px] md:text-xs uppercase tracking-[0.3em] text-primary/55">
             <span className="inline-block w-6 h-px bg-primary/30" />
-            <span>01 · About Us</span>
+            <span>04 · About Us</span>
           </div>
           <div className="hidden sm:flex items-center gap-2 text-[10px] md:text-xs uppercase tracking-[0.22em] text-primary/35">
             <span className="w-1.5 h-1.5 rounded-full bg-primary/40" />
@@ -80,6 +80,13 @@ function About() {
               <span className="ab-nudge__gem" aria-hidden="true">◆</span>
               Watch the film for the full walkthrough — how we work, and exactly what it costs.
             </p>
+
+            <div className="hero-cta mt-8">
+              <button type="button" className="hero-cta__go" data-lead="">
+                <span>Tell us what you need</span>
+                <ArrowRight size={16} />
+              </button>
+            </div>
           </div>
 
           {/* ── The film ── */}

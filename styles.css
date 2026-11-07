@@ -51,13 +51,35 @@ body {
 
 /* The featured offer continues the cloud-city flight while its copy stays a
    real HTML layer above the art. */
-.pricing-featured {
-  background: var(--void) url('assets/hero/pricing-forge-bg.png') right center / cover no-repeat;
+.pricing-featured { background: var(--void); }
+/* The card's scene: a looping clip (or its still) behind the copy on desktop,
+   a banner across the top of the card once the columns stack. */
+.pricing-art { position: absolute; inset: 0; pointer-events: none; }
+.pricing-art > img,
+.pricing-art > video {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: right center;
+  image-rendering: pixelated;
+}
+@media (max-width: 1023px) {
+  .pricing-art {
+    position: relative; inset: auto;
+    aspect-ratio: 16 / 10;
+    margin: -2rem -2rem 1.75rem;
+    border-bottom: 2px solid rgba(229, 197, 128, 0.3);
+  }
+  .pricing-art > img,
+  .pricing-art > video { object-position: 82% center; }
+  .pricing-featured__veil { display: none; }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .pricing-art { margin: -2.5rem -2.5rem 2rem; }
 }
 .pricing-featured__veil {
   position: absolute;
   inset: 0;
-  background: rgba(27, 40, 54, 0.64);
+  /* Heavier behind the copy, lighter over the workshop on the right. */
+  background: linear-gradient(90deg, rgba(27, 40, 54, 0.9) 0%, rgba(27, 40, 54, 0.82) 42%, rgba(27, 40, 54, 0.55) 70%, rgba(27, 40, 54, 0.5) 100%);
   pointer-events: none;
 }
 .pricing-featured__content {
@@ -100,7 +122,9 @@ body {
     rgba(0, 0, 0, 0.13) 0 1px,
     transparent 1px 3px
   );
-  mix-blend-mode: multiply;
+  /* No mix-blend-mode: a full-screen blend layer over the hero video forced a
+     whole-viewport repaint every frame (the hero stutter). Black at low alpha
+     over normal blending looks the same as multiply. */
 }
 
 /* --- Blinking block caret --------------------------------------------- */
@@ -118,489 +142,6 @@ body {
    quantised like the art. */
 .pixel-lift { transition: transform 120ms steps(3, end), box-shadow 120ms steps(3, end); }
 .pixel-lift:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.5); }
-
-/* --- scroll-world theme ----------------------------------------------
-   The engine wraps its own tokens in @layer sw, so a plain page-level
-   block outranks them without specificity hacks. Dark slate to match the
-   rest of the site; the clips are bright cream/gold so they carry the
-   colour and the chrome stays quiet. */
-.sw-root {
-  --sw-bg: #1B2836;
-  --sw-ink: #E1E0CC;
-  --sw-ink-soft: rgba(225, 224, 204, 0.62);
-  --sw-accent: #E3B65C;
-  --sw-font-display: 'Pixelify Sans', ui-monospace, monospace;
-  --sw-font-body: 'Almarai', system-ui, sans-serif;
-}
-
-/* The world's own chrome is pixel-styled too: square corners, hard edges. */
-.sw-root [class*="sw-"] { border-radius: 0 !important; }
-
-/* The engine hardcodes white scrims (`color-mix(#fff …)`) on a few surfaces
-   because its stock theme is light. Those don't follow --sw-bg, so on a dark
-   theme they have to be overridden by hand. */
-.sw-root .sw-nav,
-.sw-root .sw-route__label {
-  background: rgba(27, 40, 54, 0.82) !important;
-  border: 2px solid rgba(227, 182, 92, 0.28) !important;
-  color: var(--sw-ink) !important;
-}
-.sw-root .sw-copy__tags li {
-  background: rgba(227, 182, 92, 0.12) !important;
-  border: 2px solid rgba(227, 182, 92, 0.34) !important;
-  color: var(--sw-accent) !important;
-}
-.sw-root .sw-nav { gap: 2px !important; padding: 4px !important; }
-.sw-root .sw-nav__item {
-  padding: 6px 12px !important;
-  border: 2px solid transparent !important;
-  letter-spacing: 0.02em;
-}
-.sw-root .sw-nav__item + .sw-nav__item { border-left: 2px solid rgba(227, 182, 92, 0.18) !important; }
-.sw-root .sw-nav__item.is-active { color: #10202E !important; }
-.sw-root .sw-topcta,
-.sw-root .sw-btn--primary {
-  color: #10202E !important;
-  background: var(--sw-accent) !important;
-}
-/* --- The department panel ---------------------------------------------
-   The section copy is the district's info pop-up, so it gets a real sprite
-   panel: slate plate, gold rule, stepped corners, hard offset shadow. It
-   carries its own background, which is what makes it readable over the
-   bright cream artwork. */
-.sw-root .sw-copy {
-  padding: clamp(20px, 2vw, 30px) clamp(22px, 2.2vw, 34px) clamp(24px, 2.4vw, 32px);
-  background: rgba(23, 35, 48, 0.9);
-  border: 2px solid rgba(227, 182, 92, 0.38);
-  box-shadow: 6px 6px 0 rgba(9, 16, 24, 0.55);
-  backdrop-filter: blur(2px);
-  /* No clip-path notch here: clip-path would clip the offset shadow away too,
-     and the hard shadow is the stronger pixel cue. Corners are already squared
-     by the .sw-root radius reset. */
-  text-shadow: 0 2px 10px rgba(16, 32, 46, 0.75);
-}
-
-/* A lit rule across the top edge — the panel reads as powered-on. */
-.sw-root .sw-copy::before {
-  content: '';
-  position: absolute;
-  left: 0; right: 0; top: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--gold), rgba(227, 182, 92, 0.15));
-}
-
-/* The panel supplies its own contrast now, so the layer-wide scrim can back
-   right off — at full strength it dimmed a third of the artwork. */
-.sw-root .sw-copylayer::before {
-  background: linear-gradient(90deg,
-    rgba(27, 40, 54, 0.55) 0%,
-    rgba(27, 40, 54, 0.22) 45%,
-    transparent 100%) !important;
-}
-
-/* The counter becomes the panel's tab — it labels the plate. */
-.sw-root .sw-copy__num {
-  display: inline-block;
-  font-family: 'Pixelify Sans', ui-monospace, monospace;
-  color: var(--gold);
-  background: rgba(227, 182, 92, 0.14);
-  border: 2px solid rgba(227, 182, 92, 0.3);
-  padding: 2px 9px;
-}
-
-/* --- The centred pixel wordmark ---------------------------------------
-   Sits above the scenes (stage is z-index 10) and below the topbar (50), so
-   it never fights the nav. Never interactive — the copy and CTAs own clicks. */
-.cf-wordmark {
-  position: fixed;
-  /* Above centre: the section copy owns the lower-left third and the route
-     rail owns the right edge — this keeps clear of both. */
-  top: 43%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 25;
-  pointer-events: none;
-  text-align: center;
-  width: max-content;
-  max-width: 74vw;
-  will-change: transform, opacity;
-}
-
-.cf-wordmark__line {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: baseline;
-  gap: 0 0.42em;
-  font-family: 'Pixelify Sans', ui-monospace, monospace;
-  font-weight: 700;
-  font-size: clamp(1.7rem, 6.2vw, 4.6rem);
-  line-height: 1;
-  letter-spacing: 0.02em;
-  color: #F4EFDD;
-}
-
-.cf-wordmark__word { display: inline-flex; }
-
-/* Each glyph drops in on a stepped curve — motion quantised like the art —
-   then keeps a slow pixel bob so the title never feels like flat UI. */
-.cf-wordmark__ch {
-  display: inline-block;
-  opacity: 0;
-  /* Hard offset shadow + a soft halo: readable over both bright cloud and
-     dark slate without a scrim box. */
-  text-shadow:
-    3px 3px 0 rgba(16, 32, 46, 0.85),
-    0 0 22px rgba(227, 182, 92, 0.45);
-  animation:
-    cf-wm-drop 380ms steps(5, end) both,
-    cf-wm-bob 3.6s steps(4, end) infinite;
-  /* --d is the per-glyph stagger, set inline by world.js. The bob waits for
-     the whole line to have landed before it starts breathing. */
-  animation-delay: var(--d, 0ms), calc(var(--d, 0ms) + 900ms);
-}
-
-@keyframes cf-wm-drop {
-  from { opacity: 0; transform: translateY(-0.45em) scale(1.15); }
-  60%  { opacity: 1; }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-@keyframes cf-wm-bob {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-3px); }
-}
-
-/* Blinking block caret, same beat as the pixel caret used elsewhere. */
-.cf-wordmark__caret {
-  display: inline-block;
-  width: 0.42em;
-  height: 0.86em;
-  background: var(--gold);
-  box-shadow: 3px 3px 0 rgba(16, 32, 46, 0.85);
-  opacity: 0;
-  animation:
-    cf-wm-caret-in 1ms steps(1, end) both,
-    pixel-blink 1s steps(1, end) infinite;
-  animation-delay: var(--d, 0ms), var(--d, 0ms);
-}
-@keyframes cf-wm-caret-in { to { opacity: 1; } }
-
-.cf-wordmark__sub {
-  margin-top: 0.9rem;
-  font-family: 'Pixelify Sans', ui-monospace, monospace;
-  font-size: clamp(0.72rem, 1.8vw, 1rem);
-  letter-spacing: 0.34em;
-  text-transform: uppercase;
-  color: var(--gold);
-  text-shadow: 2px 2px 0 rgba(16, 32, 46, 0.9);
-  opacity: 0;
-  animation: cf-wm-fade 700ms steps(6, end) both;
-  animation-delay: var(--d, 0ms);
-}
-@keyframes cf-wm-fade { from { opacity: 0; } to { opacity: 0.92; } }
-
-@media (prefers-reduced-motion: reduce) {
-  .cf-wordmark__ch,
-  .cf-wordmark__sub,
-  .cf-wordmark__caret { animation: none; opacity: 1; transform: none; }
-  .cf-wordmark__sub { opacity: 0.92; }
-}
-
-/* --- Plan deck controls -----------------------------------------------
-   Square, chunky, stepped. The deck is the one place on the page where the
-   visitor is being asked to do something with their hands, so the controls
-   are deliberately loud. */
-.deck-arrow {
-  width: 40px; height: 40px;
-  display: inline-flex; align-items: center; justify-content: center;
-  color: var(--gold);
-  background: rgba(227, 182, 92, 0.1);
-  border: 2px solid rgba(227, 182, 92, 0.35);
-  box-shadow: 3px 3px 0 rgba(9, 16, 24, 0.5);
-  border-radius: 0 !important;
-  transition: transform 120ms steps(3, end), background 120ms steps(3, end), box-shadow 120ms steps(3, end);
-}
-.deck-arrow:hover:not(:disabled) {
-  background: var(--gold);
-  color: #10202E;
-  transform: translate(-2px, -2px);
-  box-shadow: 5px 5px 0 rgba(9, 16, 24, 0.6);
-}
-.deck-arrow:active:not(:disabled) { transform: translate(1px, 1px); box-shadow: 1px 1px 0 rgba(9, 16, 24, 0.6); }
-.deck-arrow:disabled { opacity: 0.28; cursor: default; }
-
-.deck-count {
-  font-family: 'Pixelify Sans', ui-monospace, monospace;
-  font-size: 0.8rem;
-  letter-spacing: 0.12em;
-  color: rgba(227, 182, 92, 0.75);
-}
-
-.deck-hint {
-  font-family: 'Pixelify Sans', ui-monospace, monospace;
-  font-size: 0.72rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(225, 224, 204, 0.42);
-  display: none;
-}
-@media (min-width: 640px) { .deck-hint { display: inline-flex; align-items: center; } }
-
-/* Dots are pixel blocks; the active one stretches into a bar. */
-.deck-dot {
-  width: 10px; height: 10px;
-  background: rgba(225, 224, 204, 0.22);
-  border: 2px solid transparent;
-  border-radius: 0 !important;
-  transition: width 160ms steps(4, end), background 160ms steps(4, end);
-}
-.deck-dot:hover { background: rgba(225, 224, 204, 0.45); }
-.deck-dot.is-active { width: 26px; background: var(--gold); }
-
-/* The front card of the deck gets a lit plate edge. */
-.deck-card-active {
-  box-shadow: 0 0 0 2px rgba(227, 182, 92, 0.55), 6px 6px 0 rgba(9, 16, 24, 0.45);
-}
-
-/* Dragging a card shouldn't select its text. */
-[data-track] { user-select: none; -webkit-user-select: none; }
-
-/* --- Brand mark -------------------------------------------------------
-   The engine ships a gradient bar as a placeholder logo. Replaced with the
-   real ClientForge emblem — a winged, haloed anvil, pixel-drawn in the same
-   gold and slate as the world. Rendered `pixelated` so it stays crisp. */
-.sw-root .sw-brand__mark {
-  width: 30px; height: 30px;
-  background: url('assets/logo/clientforge-mark.png') center / contain no-repeat !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  image-rendering: pixelated;
-}
-.sw-root .sw-brand__name { letter-spacing: 0.04em; }
-
-/* --- Scroll cue -------------------------------------------------------
-   The engine's stock hint is low-contrast type with no plate, which vanishes
-   against bright cloud art. It gets its own slate plate, the pixel face, and a
-   bouncing arrow — it's the one instruction the page depends on. */
-.sw-root .sw-hint {
-  bottom: 34px;
-  gap: 12px;
-  padding: 12px 22px 14px;
-  background: rgba(16, 27, 38, 0.86);
-  border: 2px solid rgba(227, 182, 92, 0.42);
-  box-shadow: 5px 5px 0 rgba(9, 16, 24, 0.5);
-  font-family: 'Pixelify Sans', ui-monospace, monospace;
-  font-size: 0.9rem;
-  letter-spacing: 0.1em;
-  text-transform: none;
-  color: var(--ink);
-}
-/* The engine's own marker element becomes the arrow. */
-.sw-root .sw-hint i {
-  width: 0; height: 0;
-  border-left: 9px solid transparent;
-  border-right: 9px solid transparent;
-  border-top: 12px solid var(--gold);
-  background: none;
-  animation: hint-drop 1.5s steps(3, end) infinite;
-}
-@keyframes hint-drop {
-  0%, 100% { transform: translateY(0); opacity: 0.75; }
-  50%      { transform: translateY(6px); opacity: 1; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .sw-root .sw-hint i { animation: none; }
-}
-
-/* --- District label ---------------------------------------------------
-   The district name is the point of each scene, so it leads: bigger than the
-   headline's supporting role, gold, and sitting on its own rule. */
-.sw-root .sw-copy__eyebrow {
-  margin-top: 16px;
-  font-size: clamp(1.05rem, 1.7vw, 1.6rem);
-  letter-spacing: 0.2em;
-  line-height: 1.1;
-  color: var(--gold);
-  text-shadow: 2px 2px 0 rgba(9, 16, 24, 0.9);
-}
-.sw-root .sw-copy__eyebrow::after {
-  content: '';
-  display: block;
-  width: 3.2em;
-  height: 3px;
-  margin-top: 10px;
-  background: var(--gold);
-}
-.sw-root .sw-copy__title {
-  margin-top: 14px;
-  font-size: clamp(1.6rem, 3.2vw, 2.6rem);   /* the label leads, this supports */
-}
-
-/* --- Plan deck --------------------------------------------------------- */
-.deck-arrow {
-  width: 40px; height: 40px;
-  display: inline-flex; align-items: center; justify-content: center;
-  color: var(--gold);
-  background: rgba(227, 182, 92, 0.1);
-  border: 2px solid rgba(227, 182, 92, 0.34);
-  box-shadow: 3px 3px 0 rgba(9, 16, 24, 0.5);
-  transition: transform 120ms steps(3, end), background 120ms steps(3, end);
-}
-.deck-arrow:hover:not(:disabled) { background: rgba(227, 182, 92, 0.22); transform: translate(-2px, -2px); }
-.deck-arrow:disabled { opacity: 0.28; }
-
-.deck-count,
-.deck-hint {
-  font-family: 'Pixelify Sans', ui-monospace, monospace;
-  font-size: 0.8rem;
-  letter-spacing: 0.16em;
-  color: rgba(225, 224, 204, 0.5);
-  text-transform: uppercase;
-}
-.deck-count { color: var(--gold); }
-.deck-hint { display: inline-flex; align-items: center; }
-.deck-hint .pixel-caret { width: 0.4em; height: 0.9em; }
-
-.deck-dot {
-  width: 12px; height: 12px;
-  background: rgba(225, 224, 204, 0.22);
-  border: 2px solid transparent;
-  transition: width 140ms steps(3, end), background 140ms steps(3, end);
-}
-.deck-dot.is-active { width: 30px; background: var(--gold); }
-
-/* The front card of the deck gets a lit edge so it's obvious which one the
-   controls act on. */
-.deck-card-active { box-shadow: 0 0 0 2px var(--gold), 6px 6px 0 rgba(9, 16, 24, 0.5); }
-
-/* --- Swipe to confirm --------------------------------------------------
-   Drag the knob across, or tap anywhere on the track for the same result. */
-.swipe-track {
-  position: relative;
-  display: flex; align-items: center; justify-content: center;
-  width: 100%; height: 56px; padding: 4px;
-  overflow: hidden;
-  cursor: pointer;
-  user-select: none;
-  background: rgba(9, 16, 24, 0.5);
-  border: 2px solid rgba(225, 224, 204, 0.14);
-  transition: border-color 140ms steps(3, end), background 140ms steps(3, end);
-}
-.swipe-track--featured {
-  background: rgba(227, 182, 92, 0.08);
-  border-color: rgba(227, 182, 92, 0.4);
-}
-.swipe-track:hover { border-color: rgba(227, 182, 92, 0.65); }
-.swipe-track.is-done { border-color: var(--gold); background: rgba(227, 182, 92, 0.18); }
-/* While dragging, drop the easing so the handle tracks the finger exactly. */
-.swipe-track.is-dragging .swipe-handle,
-.swipe-track.is-dragging .swipe-fill { transition: none; }
-
-.swipe-fill {
-  position: absolute; left: 0; top: 0; bottom: 0;
-  background: rgba(227, 182, 92, 0.2);
-  pointer-events: none;
-  transition: width 240ms steps(6, end);
-}
-.swipe-label {
-  position: relative;
-  padding-left: 34px;                 /* clear of the knob at rest */
-  font-family: 'Pixelify Sans', ui-monospace, monospace;
-  font-size: 0.95rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(225, 224, 204, 0.82);
-  pointer-events: none;
-  animation: swipe-nudge 2.4s steps(4, end) infinite;
-}
-.swipe-track.is-done .swipe-label { color: var(--gold); animation: none; }
-@keyframes swipe-nudge {
-  0%, 70%, 100% { transform: translateX(0); }
-  80%           { transform: translateX(4px); }
-}
-
-.swipe-handle {
-  position: absolute; left: 4px; top: 4px;
-  width: 48px; height: calc(100% - 8px);
-  display: flex; align-items: center; justify-content: center;
-  background: var(--gold);
-  color: #10202E;
-  box-shadow: 3px 0 0 rgba(9, 16, 24, 0.45);
-  cursor: grab;
-  touch-action: pan-y;                /* vertical page scroll still works */
-  transition: transform 240ms steps(6, end);
-}
-.swipe-track.is-dragging .swipe-handle { cursor: grabbing; }
-
-/* Chevrons pointing the way, marching toward the far end. */
-.swipe-chevrons {
-  position: absolute; right: 14px;
-  display: flex; gap: 5px;
-  pointer-events: none;
-}
-.swipe-chevrons i {
-  width: 7px; height: 7px;
-  border-right: 3px solid rgba(227, 182, 92, 0.8);
-  border-top: 3px solid rgba(227, 182, 92, 0.8);
-  transform: rotate(45deg);
-  animation: swipe-march 1.5s steps(2, end) infinite;
-}
-.swipe-chevrons i:nth-child(2) { animation-delay: 0.18s; }
-.swipe-chevrons i:nth-child(3) { animation-delay: 0.36s; }
-.swipe-track.is-done .swipe-chevrons { opacity: 0; }
-@keyframes swipe-march {
-  0%, 100% { opacity: 0.25; }
-  40%      { opacity: 1; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .swipe-label { animation: none; }
-}
-
-/* --- Showcase button ---------------------------------------------------
-   Quiet on purpose: the swipe is the primary action, this is the escape
-   hatch for people who want proof before they commit. */
-.showcase-btn {
-  width: 100%;
-  margin-top: 10px;
-  padding: 11px 14px;
-  font-family: 'Pixelify Sans', ui-monospace, monospace;
-  font-size: 0.8rem;
-  letter-spacing: 0.06em;
-  color: rgba(225, 224, 204, 0.68);
-  background: transparent;
-  border: 2px solid rgba(225, 224, 204, 0.16);
-  transition: color 120ms steps(3, end), border-color 120ms steps(3, end);
-}
-.showcase-btn:hover {
-  color: var(--gold);
-  border-color: rgba(227, 182, 92, 0.55);
-}
-
-/* --- Frame locks -------------------------------------------------------
-   Detents at each district arrival so a fast flick can't skip a service card.
-   Snap is `proximity`, so a deliberate scroll still moves freely; the anchors
-   only catch you when you come to rest near one. Scoped to the document
-   scroller but harmless below the hero — the sections underneath have no snap
-   targets, so nothing there snaps. */
-html { scroll-snap-type: y proximity; }
-
-.sw-lock {
-  position: absolute;
-  left: 0;
-  width: 1px;
-  height: 1px;
-  pointer-events: none;
-  scroll-snap-align: start;
-  /* One fling stops at one district instead of leaping the set. */
-  scroll-snap-stop: always;
-}
-
-/* Someone who has asked the OS for less motion should not be pulled around by
-   the page either — for them the flight is free-scrolling. */
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-snap-type: none; }
-}
 
 /* --- Reel gallery ------------------------------------------------------
    Phone-shaped cutouts in a pixel frame. Sized so five sit across a desktop
@@ -751,20 +292,6 @@ html { scroll-snap-type: y proximity; }
 
 @media (max-width: 640px) {
   .reel { width: 168px; }
-}
-
-/* --- The value ladder ---------------------------------------------------
-   Without this the tiers read as three unrelated feature lists. This says
-   what the extra money actually buys. */
-.plan-inherits {
-  display: flex; align-items: center; gap: 8px;
-  margin-bottom: 14px;
-  padding: 8px 11px;
-  font-family: 'Pixelify Sans', ui-monospace, monospace;
-  font-size: 0.76rem; letter-spacing: 0.06em; text-transform: uppercase;
-  color: var(--gold);
-  background: rgba(227, 182, 92, 0.1);
-  border-left: 3px solid var(--gold);
 }
 
 /* Where the money goes on managed services. Said on the card, not in the
@@ -1311,6 +838,9 @@ button:focus-visible, a:focus-visible {
 .pv-laptop {
   position: absolute; inset: 0;
   perspective: 800px;
+  /* The folded lid's 3D projection is wider than the laptop; on a phone it
+     pushed the whole page sideways until the lid opened. */
+  overflow-x: clip;
 }
 .pv-laptop__lid {
   position: absolute; z-index: 2;
@@ -1544,4 +1074,636 @@ button:focus-visible, a:focus-visible {
   text-transform: uppercase;
   color: rgba(227, 182, 92, 0.75);
   margin-bottom: 2px;
+}
+
+/* ============================================================
+   HERO FILM
+   One looping video with a fixed copy panel. The panel holds the
+   permanent headline; only the district caption inside it changes
+   with the film. Captions are grid-stacked in one cell so the panel
+   is always as tall as the longest caption: no layout jump.
+   ============================================================ */
+.cf-hero {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--void);
+  isolation: isolate;
+}
+.cf-hero__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 62% 50%;   /* the districts sit centre-right, clear of the panel */
+  z-index: -2;
+}
+/* Left-weighted veil: enough to seat the panel, light enough to keep the art. */
+.cf-hero__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(27, 40, 54, 0.62) 0%, rgba(27, 40, 54, 0.28) 42%, transparent 70%),
+    linear-gradient(0deg, rgba(27, 40, 54, 0.7) 0%, transparent 22%);
+}
+
+/* --- Top bar ---------------------------------------------------------- */
+.cf-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: clamp(16px, 2.4vw, 28px) clamp(20px, 5vw, 64px);
+}
+.cf-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: 0.04em;
+  color: #F4EFDD;
+  text-shadow: 2px 2px 0 rgba(16, 32, 46, 0.85);
+}
+.cf-brand img { image-rendering: pixelated; }
+.cf-top__links {
+  display: flex;
+  margin: 0 0 0 auto;
+  padding: 4px;
+  list-style: none;
+  background: rgba(27, 40, 54, 0.82);
+  border: 2px solid rgba(227, 182, 92, 0.28);
+}
+.cf-top__links li + li { border-left: 2px solid rgba(227, 182, 92, 0.18); }
+.cf-top__links a {
+  display: block;
+  padding: 7px 16px;
+  font-size: 0.9rem;
+  color: var(--ink);
+  transition: color 120ms steps(3, end);
+}
+.cf-top__links a:hover { color: var(--gold); }
+
+/* --- Buttons (hero, FAQ) ---------------------------------------------- */
+.cf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 13px 22px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  background: rgba(27, 40, 54, 0.75);
+  border: 2px solid rgba(225, 224, 204, 0.3);
+  box-shadow: 4px 4px 0 rgba(9, 16, 24, 0.5);
+  transition: transform 120ms steps(3, end), box-shadow 120ms steps(3, end);
+}
+.cf-btn:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 rgba(9, 16, 24, 0.55); }
+.cf-btn--primary { color: #10202E; background: var(--gold); border-color: var(--gold); font-weight: 700; }
+.cf-top__cta { padding: 10px 18px; }
+
+/* --- The panel -------------------------------------------------------- */
+.cf-hero__inner {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 24px clamp(20px, 5vw, 64px) 104px;   /* bottom clears the rail */
+}
+.cf-panel {
+  position: relative;
+  width: min(100%, 540px);
+  padding: clamp(24px, 2.6vw, 36px);
+  background: rgba(23, 35, 48, 0.9);
+  border: 2px solid rgba(227, 182, 92, 0.38);
+  box-shadow: 6px 6px 0 rgba(9, 16, 24, 0.55);
+}
+/* Lit rule across the top edge — the panel reads as powered-on. */
+.cf-panel::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), rgba(227, 182, 92, 0.15));
+}
+.cf-eyebrow {
+  margin: 0;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.85rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.cf-h1 {
+  margin: 14px 0 0;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-weight: 700;
+  font-size: clamp(2rem, 3vw, 2.55rem);
+  line-height: 1.08;
+  letter-spacing: 0.005em;
+  color: #F4EFDD;
+  text-shadow: 3px 3px 0 rgba(9, 16, 24, 0.7);
+  text-wrap: balance;
+}
+.cf-lede {
+  margin: 16px 0 0;
+  max-width: 44ch;
+  font-size: clamp(1rem, 1.2vw, 1.1rem);
+  line-height: 1.6;
+  color: rgba(225, 224, 204, 0.86);
+}
+
+/* The caption that follows the film. */
+.cf-scenes {
+  display: grid;
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 2px solid rgba(227, 182, 92, 0.2);
+}
+.cf-scene {
+  grid-area: 1 / 1;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6px);
+  transition: opacity 240ms steps(4, end), transform 240ms steps(4, end), visibility 0s 240ms;
+}
+.cf-scene.is-on {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: opacity 240ms steps(4, end), transform 240ms steps(4, end);
+}
+.cf-scene__label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 1rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.cf-scene__label span {
+  padding: 2px 8px;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  background: rgba(227, 182, 92, 0.14);
+  border: 2px solid rgba(227, 182, 92, 0.3);
+}
+.cf-scene__title {
+  margin: 12px 0 0;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-weight: 600;
+  font-size: clamp(1.2rem, 1.6vw, 1.45rem);
+  line-height: 1.2;
+  color: var(--ink);
+}
+.cf-scene__body {
+  margin: 8px 0 0;
+  max-width: 46ch;
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: rgba(225, 224, 204, 0.74);
+}
+.cf-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 26px;
+}
+
+/* --- District rail ---------------------------------------------------- */
+.cf-rail {
+  position: absolute;
+  left: clamp(20px, 5vw, 64px);
+  right: clamp(20px, 5vw, 64px);
+  bottom: clamp(20px, 3vw, 32px);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cf-rail__steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cf-rail__steps button,
+.cf-rail__toggle {
+  height: 38px;
+  padding: 0 14px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(225, 224, 204, 0.8);
+  background: rgba(27, 40, 54, 0.82);
+  border: 2px solid rgba(227, 182, 92, 0.24);
+  cursor: pointer;
+  transition: color 120ms steps(3, end), background 120ms steps(3, end);
+}
+.cf-rail__steps button:hover { color: var(--gold); }
+.cf-rail__steps button.is-on { color: #10202E; background: var(--gold); border-color: var(--gold); }
+.cf-rail__toggle { width: 38px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
+/* Pause glyph: two pixel bars. Paused: a pixel play triangle. */
+.cf-rail__toggle i { width: 12px; height: 14px; border-left: 4px solid var(--gold); border-right: 4px solid var(--gold); }
+.cf-hero.is-paused .cf-rail__toggle i {
+  width: 0; height: 0;
+  border-right: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 13px solid var(--gold);
+  margin-left: 3px;
+}
+.cf-rail__toggle:focus-visible,
+.cf-rail__steps button:focus-visible,
+.cf-btn:focus-visible,
+.cf-top a:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+/* --- Phone: art on top, panel below ------------------------------------
+   Overlaying a 500px panel on a phone hides the film. So on narrow screens
+   the film gets the top of the hero and the panel sits under it. */
+@media (max-width: 900px) {
+  .cf-top__links { display: none; }
+  .cf-hero { min-height: 0; }
+  .cf-hero__video {
+    position: relative;
+    inset: auto;
+    order: 1;
+    height: 52svh;
+    min-height: 300px;
+    object-position: center 50%;
+  }
+  .cf-hero__scrim { display: none; }
+  .cf-top { position: absolute; top: 0; left: 0; right: 0; z-index: 2; }
+  .cf-rail { order: 2; position: relative; left: auto; right: auto; bottom: auto; margin-top: -54px; padding: 0 16px 16px; }
+  /* All five districts fit across a phone: equal columns, short labels. */
+  .cf-rail__steps { flex: 1; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
+  .cf-rail__steps button { width: 100%; height: 40px; padding: 0 2px; font-size: 0.7rem; letter-spacing: 0.04em; white-space: nowrap; }
+  .cf-long { display: none; }
+  .cf-rail__toggle { flex: none; height: 40px; width: 40px; }
+  .cf-hero__inner { order: 3; padding: 16px 16px 32px; }
+  .cf-panel { width: 100%; }
+  .cf-h1 { font-size: clamp(1.75rem, 7.4vw, 2.3rem); }
+  .cf-ctas .cf-btn { flex: 1 1 100%; justify-content: center; text-align: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cf-scene, .cf-scene.is-on, .cf-btn { transition: none; }
+}
+
+/* ============================================================
+   FAQ — static HTML (see index.html). Native <details>, so it
+   works with no JS and every answer is in the crawlable DOM.
+   ============================================================ */
+.cf-faq { background: var(--void); padding: clamp(56px, 9vw, 128px) 0; }
+.cf-faq__inner { max-width: 860px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 32px); }
+.cf-faq__kicker {
+  display: flex; align-items: center; gap: 12px;
+  margin: 0;
+  font-size: 0.75rem; letter-spacing: 0.3em; text-transform: uppercase;
+  color: rgba(222, 219, 200, 0.55);
+}
+.cf-faq__kicker span { width: 24px; height: 1px; background: rgba(222, 219, 200, 0.3); }
+.cf-faq__title {
+  margin: 20px 0 36px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-weight: 700;
+  font-size: clamp(1.8rem, 3.6vw, 2.7rem);
+  line-height: 1.1;
+  color: #F4EFDD;
+  text-wrap: balance;
+}
+.cf-faq details {
+  background: rgba(34, 53, 70, 0.7);
+  border: 2px solid rgba(225, 224, 204, 0.14);
+}
+.cf-faq details + details { margin-top: 10px; }
+.cf-faq details[open] { border-color: rgba(227, 182, 92, 0.45); }
+.cf-faq summary {
+  display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  padding: 18px 22px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 1.08rem;
+  color: var(--ink);
+  cursor: pointer;
+  list-style: none;
+}
+.cf-faq summary::-webkit-details-marker { display: none; }
+.cf-faq summary::after { content: '+'; color: var(--gold); font-size: 1.4rem; line-height: 1; }
+.cf-faq details[open] summary::after { content: '–'; }
+.cf-faq summary:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
+.cf-faq details p { margin: 0; padding: 0 22px 20px; line-height: 1.65; color: rgba(225, 224, 204, 0.78); max-width: 68ch; }
+.cf-faq details a { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }
+.cf-faq__cta { margin-top: 32px; }
+
+/* Offer card buttons: equal, full-width taps on phones. */
+@media (max-width: 639px) {
+  .hero-cta > button { flex: 1 1 100%; justify-content: center; }
+}
+
+/* --- Best-value offer ---------------------------------------------------
+   The Full System card is the biggest on the page: heavier gold frame, hard
+   drop shadow, a larger price, and a sticker on the corner. */
+.offer-best > .pricing-featured {
+  border: 3px solid var(--gold);
+  box-shadow: 8px 8px 0 rgba(9, 16, 24, 0.6), 0 0 80px rgba(227, 182, 92, 0.16);
+}
+.best-sticker {
+  position: absolute; z-index: 5;
+  top: -22px; right: 22px;
+  display: grid; justify-items: center; gap: 2px;
+  padding: 10px 18px 9px;
+  color: #10202E;
+  background: var(--gold);
+  border: 3px solid #10202E;
+  box-shadow: 5px 5px 0 rgba(9, 16, 24, 0.75), inset 0 3px 0 rgba(255, 244, 214, 0.55), inset 0 -3px 0 rgba(150, 105, 30, 0.45);
+  transform: rotate(5deg);
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  text-transform: uppercase;
+  animation: best-bob 2.4s steps(2, end) infinite;
+}
+.best-sticker__star {
+  /* Pixel star: a gold-on-navy plus with a dot, drawn with box-shadows. */
+  width: 4px; height: 4px; margin-bottom: 4px;
+  background: #10202E;
+  box-shadow: 0 -4px #10202E, 0 4px #10202E, -4px 0 #10202E, 4px 0 #10202E;
+}
+.best-sticker__main { font-size: 1.25rem; font-weight: 700; letter-spacing: 0.12em; line-height: 1; }
+.best-sticker__sub { font-size: 0.62rem; letter-spacing: 0.14em; opacity: 0.8; }
+@keyframes best-bob {
+  0%, 100% { transform: rotate(5deg) translateY(0); }
+  50%      { transform: rotate(5deg) translateY(-3px); }
+}
+@media (prefers-reduced-motion: reduce) { .best-sticker { animation: none; } }
+@media (max-width: 639px) {
+  .best-sticker { top: -16px; right: 12px; padding: 8px 12px 7px; }
+  .best-sticker__main { font-size: 1rem; }
+}
+
+/* Small flag on the Full System tab so the best value is findable. */
+.tab-best {
+  margin-left: 2px;
+  padding: 2px 5px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase;
+  line-height: 1.2;
+  color: #10202E;
+  background: var(--gold);
+  box-shadow: 2px 2px 0 rgba(9, 16, 24, 0.6);
+}
+.tab-best { position: relative; z-index: 1; }
+@media (max-width: 639px) {
+  .tab-best { position: absolute; top: -9px; right: -4px; margin: 0; transform: rotate(4deg); }
+}
+
+/* ============================================================
+   04 · THE MATH — leak vs. sealed pipe, visitor's own numbers
+   ============================================================ */
+.leak-controls {
+  border: 2px solid rgba(225, 224, 204, 0.14);
+  background: var(--surface);
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.4);
+  padding: 22px;
+}
+.leak-presets { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 22px; }
+.leak-presets__label,
+.leak-slider small,
+.leak-card__tag,
+.leak-card__label,
+.leak-hole em,
+.leak-bin,
+.leak-cta__proof em { font-family: 'Pixelify Sans', ui-monospace, monospace; }
+.leak-presets__label { font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(225, 224, 204, 0.45); margin-right: 4px; }
+.leak-chip {
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.78rem; letter-spacing: 0.04em;
+  padding: 8px 12px; min-height: 40px;
+  color: rgba(225, 224, 204, 0.75);
+  border: 2px solid rgba(225, 224, 204, 0.18);
+  transition: color 120ms steps(3, end), border-color 120ms steps(3, end), background 120ms steps(3, end);
+}
+.leak-chip:hover { color: var(--gold); border-color: rgba(227, 182, 92, 0.6); }
+.leak-chip.is-on { color: #10202E; background: var(--gold); border-color: var(--gold); box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.45); }
+
+.leak-sliders { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px 28px; }
+.leak-slider__top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 0.82rem; color: rgba(225, 224, 204, 0.75); }
+.leak-slider__top b { font-family: 'Pixelify Sans', ui-monospace, monospace; font-size: 1.15rem; font-weight: 400; color: var(--ink); }
+.leak-slider small { display: block; margin-top: 6px; font-size: 0.66rem; color: rgba(225, 224, 204, 0.38); }
+.leak-slider input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 28px; margin-top: 6px; background: transparent; cursor: pointer;
+}
+.leak-slider input[type="range"]::-webkit-slider-runnable-track {
+  height: 8px;
+  background: linear-gradient(90deg, var(--gold) var(--p), rgba(225, 224, 204, 0.14) var(--p));
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.35);
+}
+.leak-slider input[type="range"]::-moz-range-track { height: 8px; background: rgba(225, 224, 204, 0.14); }
+.leak-slider input[type="range"]::-moz-range-progress { height: 8px; background: var(--gold); }
+.leak-slider input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 20px; height: 20px; margin-top: -6px;
+  background: var(--ink); border: 3px solid #10202E; border-radius: 0;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.5);
+}
+.leak-slider input[type="range"]::-moz-range-thumb {
+  width: 14px; height: 14px; background: var(--ink); border: 3px solid #10202E; border-radius: 0;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.5);
+}
+.leak-slider input[type="range"]:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+
+.leak-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+.leak-card {
+  position: relative; padding: 24px 24px 26px;
+  background: var(--surface);
+  border: 2px solid rgba(225, 224, 204, 0.12);
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.4);
+}
+.leak-card--without { --tone: #E07A5F; }
+.leak-card--with {
+  --tone: var(--gold);
+  border: 3px solid var(--gold);
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.45), 0 0 48px rgba(227, 182, 92, 0.14);
+}
+.leak-card__tag {
+  display: inline-block; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--tone); border: 2px solid var(--tone); padding: 5px 10px;
+}
+.leak-card--with .leak-card__tag { color: #10202E; background: var(--gold); }
+.leak-card__label { margin-top: 6px; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(225, 224, 204, 0.5); }
+.leak-card__big {
+  font-size: clamp(2.4rem, 5vw, 3.8rem); font-weight: 500; letter-spacing: -0.03em; line-height: 1.05;
+  color: var(--tone); font-variant-numeric: tabular-nums;
+}
+.leak-card__big span { font-size: 0.4em; letter-spacing: 0; margin-left: 6px; color: rgba(225, 224, 204, 0.45); }
+.leak-card__line { margin-top: 10px; font-size: 0.92rem; line-height: 1.55; color: rgba(225, 224, 204, 0.68); }
+.leak-card__line b { color: var(--ink); font-weight: 700; }
+
+/* The pipe. Each lead is a full-width runner whose pixel sits at its left
+   edge, so translateX(%) is a share of the lane, which is what lets a hole at
+   left:20% line up with a 20% keyframe. */
+.leak-pipe { position: relative; height: 128px; margin: 14px 0 6px; overflow: clip; }
+.leak-lane { position: absolute; left: 0; right: 62px; top: 44px; height: 30px; }
+.leak-tube {
+  position: absolute; inset: 0;
+  border: 3px solid rgba(225, 224, 204, 0.32); border-right: 0;
+  background: rgba(0, 0, 0, 0.22);
+}
+.leak-hole { position: absolute; bottom: -3px; width: 18px; height: 3px; margin-left: -4px; background: var(--surface); }
+.leak-pipe.is-sealed .leak-hole { height: 7px; bottom: -5px; background: var(--gold); box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4); }
+.leak-hole em {
+  position: absolute; left: 50%; top: 14px; transform: translateX(-50%);
+  width: 92px; text-align: center; font-style: normal; font-size: 0.62rem; line-height: 1.15;
+  color: #E07A5F;
+}
+.leak-hole:not(.is-low) em { top: auto; bottom: 40px; }
+.leak-pipe.is-sealed .leak-hole em { color: var(--gold); }
+.leak-run {
+  position: absolute; inset: 0;
+  animation-duration: 4.2s; animation-timing-function: linear; animation-iteration-count: infinite;
+  animation-fill-mode: both;
+}
+.leak-run i {
+  position: absolute; left: 3px; top: 7px; width: 10px; height: 10px;
+  background: var(--ink); box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.35);
+}
+.leak-pipe.is-sealed .leak-run i { background: var(--gold); }
+.leak-run.is-lost i { background: #E07A5F; }
+.leak-bin {
+  position: absolute; right: 0; top: 30px; width: 58px; height: 58px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  border: 3px solid rgba(225, 224, 204, 0.32);
+  font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(225, 224, 204, 0.55);
+}
+.leak-bin b { font-size: 1rem; font-weight: 400; letter-spacing: 0; color: var(--tone); }
+.leak-pipe.is-sealed .leak-bin { border-color: var(--gold); background: rgba(227, 182, 92, 0.1); }
+
+@keyframes leak-run { from { transform: translateX(0); } to { transform: translateX(100%); } }
+@keyframes leak-drop-1 {
+  0% { transform: translate(0, 0); opacity: 1; }
+  20% { transform: translate(20%, 0); opacity: 1; }
+  32%, 100% { transform: translate(20%, 64px); opacity: 0; }
+}
+@keyframes leak-drop-2 {
+  0% { transform: translate(0, 0); opacity: 1; }
+  40% { transform: translate(40%, 0); opacity: 1; }
+  52%, 100% { transform: translate(40%, 64px); opacity: 0; }
+}
+@keyframes leak-drop-3 {
+  0% { transform: translate(0, 0); opacity: 1; }
+  60% { transform: translate(60%, 0); opacity: 1; }
+  72%, 100% { transform: translate(60%, 64px); opacity: 0; }
+}
+
+.leak-cta {
+  display: grid; grid-template-columns: 1fr 1.25fr; gap: 20px; align-items: stretch; margin-top: 20px;
+}
+.leak-cta__proof {
+  display: flex; gap: 16px; align-items: flex-start; padding: 20px;
+  border-left: 3px solid var(--gold); background: rgba(0, 0, 0, 0.18);
+  font-size: 0.86rem; line-height: 1.55; color: rgba(225, 224, 204, 0.7);
+}
+.leak-cta__proof b { font-family: 'Pixelify Sans', ui-monospace, monospace; font-size: 2.6rem; font-weight: 400; line-height: 1; color: var(--gold); }
+.leak-cta__proof em { display: block; margin-top: 8px; font-style: normal; font-size: 0.66rem; color: rgba(225, 224, 204, 0.38); }
+.leak-cta__ask {
+  display: flex; flex-direction: column; justify-content: center; gap: 16px; padding: 22px;
+  background: var(--card); border: 2px solid rgba(227, 182, 92, 0.35); box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.4);
+}
+.leak-cta__head { font-size: clamp(1.2rem, 2.2vw, 1.6rem); line-height: 1.25; color: var(--ink); }
+.leak-cta__head b { color: var(--gold); font-weight: 700; font-variant-numeric: tabular-nums; }
+.leak-fine { margin-top: 14px; font-size: 0.72rem; line-height: 1.5; color: rgba(225, 224, 204, 0.32); max-width: 780px; }
+
+@media (max-width: 1023px) {
+  .leak-sliders { grid-template-columns: 1fr 1fr; }
+  .leak-grid, .leak-cta { grid-template-columns: 1fr; }
+}
+@media (max-width: 639px) {
+  .leak-controls { padding: 18px 16px; }
+  .leak-sliders { grid-template-columns: 1fr; gap: 16px; }
+  .leak-presets__label { width: 100%; }
+  .leak-card { padding: 20px 16px 22px; }
+  .leak-lane { right: 54px; }
+  .leak-bin { width: 50px; }
+  .leak-hole em { width: 78px; font-size: 0.56rem; }
+  .leak-cta__ask .hero-cta > a { flex: 1 1 100%; justify-content: center; text-align: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leak-run { animation: none !important; transform: translateX(calc(var(--i) * 9.5%)); }
+  .leak-run.is-lost { display: none; }
+}
+@media (max-width: 639px) {
+  .leak-slider small { display: none; }
+  .leak-slider input[type="range"] { margin-top: 2px; }
+}
+/* A hole reads as a gap with a drip under it; a seal as a gold plate. */
+.leak-hole::after { content: ''; position: absolute; left: 7px; top: 6px; width: 4px; height: 4px; background: #E07A5F; animation: leak-drip 1.4s steps(4, end) infinite; }
+.leak-pipe.is-sealed .leak-hole::after { display: none; }
+@keyframes leak-drip { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(10px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .leak-hole::after { animation: none; } }
+
+/* --- Lead pop-up, CTA nudges, sticky CTA ------------------------------ */
+.lead-topics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.lead-topic {
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.74rem; letter-spacing: 0.04em; min-height: 40px; padding: 6px 8px;
+  color: rgba(225, 224, 204, 0.75); border: 2px solid rgba(225, 224, 204, 0.18);
+  transition: color 120ms steps(3, end), border-color 120ms steps(3, end), background 120ms steps(3, end);
+}
+.lead-topic:hover { color: var(--gold); border-color: rgba(227, 182, 92, 0.6); }
+.lead-topic.is-on { color: #10202E; background: var(--gold); border-color: var(--gold); }
+@media (max-width: 420px) { .lead-topics { grid-template-columns: 1fr 1fr; } }
+
+.cta-nudge {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px 16px;
+  margin-top: 28px; font-size: 0.92rem; color: rgba(225, 224, 204, 0.6); text-align: center;
+}
+
+.cf-sticky {
+  position: fixed; z-index: 8000; right: 20px; bottom: 20px;
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 14px 18px;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-size: 0.9rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: #10202E; background: var(--gold); border: 3px solid #10202E;
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.55);
+  transform: translateY(140%); opacity: 0; pointer-events: none;
+  transition: transform 220ms steps(5, end), opacity 220ms steps(5, end);
+}
+.cf-sticky.is-on { transform: none; opacity: 1; pointer-events: auto; }
+.cf-sticky:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 rgba(0, 0, 0, 0.55); }
+.cf-sticky__dot { width: 8px; height: 8px; background: #10202E; animation: pixel-blink 1.2s steps(1, end) infinite; }
+@media (max-width: 639px) {
+  .cf-sticky { left: 12px; right: 12px; bottom: 12px; justify-content: center; padding: 14px 12px; }
+  /* Room so the sticky bar never covers the footer's last line. */
+  #site-footer { padding-bottom: 96px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cf-sticky { transition: none; }
+  .cf-sticky__dot { animation: none; }
+}
+
+/* Automation cards with no reel yet: a live-demo booking card, not a broken player. */
+.pv-frame--live {
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  background:
+    repeating-linear-gradient(45deg, rgba(227, 182, 92, 0.05) 0 8px, transparent 8px 16px),
+    #0E1822;
+}
+.pv-live { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 16px; }
+.pv-live__icon { font-size: 1.8rem; color: var(--gold); }
+.pv-live__line { font-size: 0.95rem; color: rgba(225, 224, 204, 0.8); max-width: 260px; }
+.pv-live__cta {
+  font-family: 'Pixelify Sans', ui-monospace, monospace; font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: #10202E; background: var(--gold); padding: 8px 12px; box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.5);
 }

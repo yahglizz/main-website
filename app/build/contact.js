@@ -94,7 +94,7 @@ function Contact() {
   return /*#__PURE__*/React.createElement("section", {
     id: "contact",
     "data-screen-label": "05 Contact",
-    className: "relative bg-black pt-24 md:pt-32 pb-16"
+    className: "relative bg-black py-16 md:py-32"
   }, /*#__PURE__*/React.createElement("div", {
     className: "max-w-7xl mx-auto px-5 sm:px-8"
   }, /*#__PURE__*/React.createElement("div", {
@@ -265,8 +265,8 @@ function Contact() {
     label: "What do you need help with?",
     required: true
   }, /*#__PURE__*/React.createElement("div", {
-    className: "grid grid-cols-2 md:grid-cols-4 gap-2"
-  }, ['Website', 'AI Automation', 'Custom App', 'Not sure'].map(opt => /*#__PURE__*/React.createElement("button", {
+    className: "grid grid-cols-2 md:grid-cols-3 gap-2"
+  }, ['Website', 'Ads', 'AI Automation', 'Full System', 'Custom App', 'Not sure'].map(opt => /*#__PURE__*/React.createElement("button", {
     key: opt,
     type: "button",
     onClick: () => setForm(f => ({
@@ -311,8 +311,19 @@ function Contact() {
     className: "block w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full"
   }) : /*#__PURE__*/React.createElement(ArrowRight, {
     size: 16
-  })))))))))), /*#__PURE__*/React.createElement("div", {
-    className: "mt-20 md:mt-28 pt-8 border-t border-white/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs text-primary/45"
+  }))))))))))));
+}
+
+/* Its own component (not inside Contact) so the FAQ can sit between the form
+   and the footer: hero.js slots #faq in front of #site-footer. */
+function SiteFooter() {
+  return /*#__PURE__*/React.createElement("footer", {
+    id: "site-footer",
+    className: "relative bg-black pb-16"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "max-w-7xl mx-auto px-5 sm:px-8"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "pt-8 border-t border-white/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs text-primary/45"
   }, /*#__PURE__*/React.createElement("div", {
     className: "flex items-center gap-2"
   }, /*#__PURE__*/React.createElement("span", {
@@ -325,14 +336,15 @@ function Contact() {
     href: "https://www.instagram.com/forgelabsx/",
     target: "_blank",
     rel: "noopener noreferrer",
-    className: "flex items-center gap-1.5 hover:text-ink transition-colors"
+    className: "flex items-center gap-1.5 py-2 hover:text-ink transition-colors"
   }, /*#__PURE__*/React.createElement(Instagram, {
     size: 13
   }), /*#__PURE__*/React.createElement("span", null, "@forgelabsx")), /*#__PURE__*/React.createElement("a", {
-    href: "#home",
-    className: "hover:text-ink transition-colors"
+    href: "#top",
+    className: "py-2 hover:text-ink transition-colors"
   }, "Back to top \u2191"), /*#__PURE__*/React.createElement("span", null, "\xA9 ", new Date().getFullYear(), " ClientForge")))));
 }
 Object.assign(window, {
-  Contact
+  Contact,
+  SiteFooter
 });

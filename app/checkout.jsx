@@ -210,4 +210,146 @@ function CheckoutModal({ plan, mode, onClose }) {
   );
 }
 
-Object.assign(window, { CheckoutModal });
+/* The lead form as a pop-up. Every "book a call" button on the page opens
+   this instead of scrolling to Contact, so the form is one tap away from
+   wherever the visitor decided. Same Web3Forms inbox as everything else. */
+const LEAD_TOPICS = ['Website', 'Ads', 'AI Automation', 'Full System', 'Custom App', 'Not sure'];
+
+function LeadModal({ topic, onClose }) {
+  const [form, setForm] = useStateCo({ name: '', email: '', phone: '', help: LEAD_TOPICS.includes(topic) ? topic : '', note: '' });
+  const [errors, setErrors] = useStateCo({});
+  const [sending, setSending] = useStateCo(false);
+  const [sent, setSent] = useStateCo(false);
+  const [failed, setFailed] = useStateCo('');
+  const panelRef = useRefCo(null);
+  const firstRef = useRefCo(null);
+
+  const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
+
+  useEffectCo(() => {
+    const back = document.activeElement;
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    const prev = document.documentElement.style.overflow;
+    document.documentElement.style.overflow = 'hidden';
+    // Straight into the first field: the visitor came here to type.
+    (firstRef.current || panelRef.current)?.focus({ preventScroll: true });
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.documentElement.style.overflow = prev;
+      if (back && back.focus) back.focus({ preventScroll: true });
+    };
+  }, [onClose]);
+
+  const submit = async (e) => {
+    e.preventDefault();
+    const err = {};
+    if (!form.name.trim()) err.name = 'required';
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email.trim())) err.email = 'valid email needed';
+    if (!form.help) err.help = 'pick one';
+    setErrors(err);
+    if (sending || Object.keys(err).length) return;
+    setSending(true);
+    setFailed('');
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: CHECKOUT_FORM_KEY,
+          subject: `New lead — ${form.help} — ${form.name}`,
+          from_name: 'ClientForge site',
+          name: form.name,
+          email: form.email,
+          replyto: form.email,
+          phone: form.phone,
+          interested_in: form.help,
+          source: 'Pop-up form',
+          message: form.note || '(no message)',
+          botcheck: '',
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data.success === false) throw new Error(data.message || 'HTTP ' + res.status);
+      setSent(true);
+    } catch {
+      setFailed(`Couldn't send that. Email us at ${CONTACT_EMAIL} and we'll pick it up.`);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <div className="co-backdrop" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div ref={panelRef} className="co-panel lead-panel" role="dialog" aria-modal="true" aria-labelledby="lead-title" tabIndex={-1}>
+        <button type="button" className="co-close" onClick={onClose} aria-label="Close">
+          <X size={16} />
+        </button>
+
+        <div className="co-head">
+          <div className="co-kicker">Free · 20 minutes · No pressure</div>
+          <h3 id="lead-title" className="co-title">Get your free growth plan</h3>
+          <div className="co-promise">
+            <Check size={12} strokeWidth={3} />
+            We reply within the business day, usually within 4 hours
+          </div>
+        </div>
+
+        {sent ? (
+          <div className="co-done">
+            <span className="co-done__mark"><Check size={22} strokeWidth={3} /></span>
+            <div className="co-done__title">Got it, {form.name.trim().split(' ')[0]}.</div>
+            <p className="co-done__body">
+              Your request is in. Check {form.email}: we'll reply with a plan or a call
+              invite within the business day.
+            </p>
+            <button type="button" className="co-btn co-btn--primary" onClick={onClose}>Close</button>
+          </div>
+        ) : (
+          <form onSubmit={submit} className="co-form" noValidate>
+            <CoField label="Name" required error={errors.name}>
+              <input ref={firstRef} className="co-input" value={form.name} onChange={set('name')} autoComplete="name" />
+            </CoField>
+            <CoField label="Email" required error={errors.email}>
+              <input className="co-input" type="email" value={form.email} onChange={set('email')} autoComplete="email" />
+            </CoField>
+            <CoField label="Phone">
+              <input className="co-input" type="tel" value={form.phone} onChange={set('phone')} autoComplete="tel" />
+            </CoField>
+            <div>
+              <div className="co-label">
+                What do you need?<span className="text-gold">*</span>
+                {errors.help && <span className="co-error">{errors.help}</span>}
+              </div>
+              <div className="lead-topics" role="group" aria-label="What do you need?">
+                {LEAD_TOPICS.map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    className={'lead-topic' + (form.help === t ? ' is-on' : '')}
+                    aria-pressed={form.help === t}
+                    onClick={() => setForm(f => ({ ...f, help: t }))}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <CoField label="What are you trying to grow or fix?">
+              <textarea className="co-input" rows={3} value={form.note} onChange={set('note')} />
+            </CoField>
+
+            {failed && <div className="co-fail">{failed}</div>}
+
+            <button type="submit" className="co-btn co-btn--primary" disabled={sending}>
+              {sending ? 'Sending…' : 'Send my request'}
+            </button>
+            <p className="co-fineprint">No spam, no sales pressure. A real person replies.</p>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+
+Object.assign(window, { CheckoutModal, LeadModal });

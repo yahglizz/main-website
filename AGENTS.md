@@ -8,8 +8,8 @@ produces a **white screen**, not a build error.
 
 ## 1. What this is
 
-A one-page marketing site for ClientForge (AI automations, apps and websites for
-small operators). Stack, in full:
+A one-page marketing site for ClientForge (AI automations, apps and websites),
+targeting **Philadelphia** businesses. Stack, in full:
 
 | Piece | What it is |
 |-------|-----------|
@@ -17,7 +17,8 @@ small operators). Stack, in full:
 | `styles.css` | One plain stylesheet. Design tokens in `:root`, then hand-written component CSS. No preprocessor. |
 | `app/*.jsx` | The React source. Compiled ahead of time — the browser never sees JSX. |
 | `app/build/*.js` | **Generated.** This is what actually ships. Never hand-edit. |
-| `app/world.js` + `app/scrub-engine.js` | Plain JS (not JSX, not compiled). The scroll-scrubbed hero "flight". Mounted outside React. |
+| `app/hero.js` | Plain JS (not JSX, not compiled). Plays the hero film and syncs its captions. The hero markup itself is static HTML in `index.html` (crawlable without JS). |
+| `robots.txt`, `sitemap.xml`, `llms.txt` | SEO / AI-answer-engine files. Keep facts in sync with the page, the JSON-LD in `<head>`, and the static FAQ. |
 | `assets/` | Video, pixel art, logo. |
 | `more previews/` | Client walkthrough screen recordings used by the Work section. Folder name has a space — URL-encode it as `more%20previews/…`. |
 | `vercel.json` | Tells Vercel there is no build: `outputDirectory: "."`, install/build are echo no-ops. |
@@ -89,8 +90,8 @@ browser. There are no modules, no imports, no bundler scoping.
    `index.html`.
 
 5. **Script order in `index.html` is a dependency graph.** Current order:
-   `scrub-engine → world → icons → motionPrimitives → checkout → pricing → work
-   → testimonials → contact → app`. `app.js` renders last because it consumes
+   `hero → icons → motionPrimitives → guardian → about → checkout → pricing →
+   work → roi → contact → app`. `app.js` renders last because it consumes
    everything above. A new component file gets a `<script>` tag before `app.js`.
 
 ---
@@ -139,8 +140,8 @@ pixel UI (`font-pixel`, and `font-serif` is aliased to it so existing
   Pixelify Sans display type — the per-word transform strands letters mid-flight
   and the pixel face reads as broken glyphs. Plain text for pixel headings.
 - Every animation needs a `@media (prefers-reduced-motion: reduce)` escape.
-  The document also carries `scroll-snap-type: y proximity`, disabled under
-  reduced motion.
+  Under reduced motion the hero film does not autoplay; the rail's play
+  button starts it.
 
 ---
 
@@ -151,11 +152,13 @@ Sections are numbered in the UI (`01 …`, `03 · Our Work`) and mounted in
 
 | File | Section | Notes |
 |------|---------|-------|
-| `world.js` | Hero | Scroll-scrubbed flight through four "districts". Owns its own DOM outside React — do not reconcile it with React. Config is the `WORLD_SECTIONS` array. |
-| `pricing.jsx` | Pricing | The value ladder. Opens `CheckoutModal`. |
+| `index.html` + `hero.js` | Hero | One seamless looping film (`assets/vid/flight-loop.mp4`, 720p twin for phones) = the five legs joined end to end, last 0.75s cross-faded into the opening (`HERO_SHIFT` in `hero.js`), keyframe every 1s. Autoplays and loops; never put `mix-blend-mode` on a full-screen layer above it (that caused the stutter). Static panel: permanent H1 + one caption per district, shown in step with the video (`HERO_LEG`, `HERO_LEAD` in `hero.js`). No scroll-scrubbing any more. Re-cut the film? Re-time those two constants. |
+| `index.html` `#faq` | FAQ | Static HTML, moved to the bottom (after Contact, in front of `#site-footer`) by `hero.js` once React renders. Mirrors the `FAQPage` JSON-LD in `<head>` — edit both together. |
+| `pricing.jsx` | Pricing | One "starting at" offer per tab (`OFFERS`), each on a pixel-art scene: `bg` still, optional `video` loop (assets/vid/pricing-*.mp4, Higgsfield). Prices here must match the JSON-LD, FAQ and llms.txt. Opens `CheckoutModal`. |
 | `work.jsx` | **Our Work → "Select a Preview"** | See below. |
-| `testimonials.jsx` | What clients say | |
-| `contact.jsx` | Contact | Web3Forms submit. |
+| `roi.jsx` | 04 · The Math (`#math`) | Without-vs-with leak calculator on the visitor's own numbers (presets in `LEAK_PRESETS`). `SYSTEM_PRICE` must match the Full System price. Fine print says it's an estimate; keep it. "See the Full System" fires `cf:offer` to switch the pricing tab. |
+| `contact.jsx` | Contact + `SiteFooter` | Web3Forms submit. Footer is its own component so the FAQ can sit between them. |
+| `app.jsx` | Order + lead pop-up | Page order: hero → Pricing → The Math → Our Work → About → Contact → FAQ → footer. Any `a[href="#contact"]` or `[data-lead="<topic>"]` opens `LeadModal` (in `checkout.jsx`) instead of scrolling; sticky "Get my free growth plan" button after the hero. |
 | `checkout.jsx` | Modal | Shared by pricing, work and hero cards. `mode="showcase"` renders the no-price variant. |
 
 ### `work.jsx` in detail

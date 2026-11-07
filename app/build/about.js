@@ -1,4 +1,4 @@
-/* Section 01: About — the promo video plus a short account of how the shop
+/* Section 04: About — the promo video plus a short account of how the shop
    actually operates, so a first-time visitor understands the company before
    they hit the price list.
 
@@ -9,8 +9,8 @@
 function About() {
   return /*#__PURE__*/React.createElement("section", {
     id: "about",
-    "data-screen-label": "01 About",
-    className: "relative bg-black py-24 md:py-32"
+    "data-screen-label": "04 About",
+    className: "relative bg-black py-16 md:py-32"
   }, /*#__PURE__*/React.createElement("div", {
     className: "absolute inset-0 bg-noise opacity-70 pointer-events-none"
   }), /*#__PURE__*/React.createElement("div", {
@@ -21,7 +21,7 @@ function About() {
     className: "flex items-center gap-3 text-[10px] md:text-xs uppercase tracking-[0.3em] text-primary/55"
   }, /*#__PURE__*/React.createElement("span", {
     className: "inline-block w-6 h-px bg-primary/30"
-  }), /*#__PURE__*/React.createElement("span", null, "01 \xB7 About Us")), /*#__PURE__*/React.createElement("div", {
+  }), /*#__PURE__*/React.createElement("span", null, "04 \xB7 About Us")), /*#__PURE__*/React.createElement("div", {
     className: "hidden sm:flex items-center gap-2 text-[10px] md:text-xs uppercase tracking-[0.22em] text-primary/35"
   }, /*#__PURE__*/React.createElement("span", {
     className: "w-1.5 h-1.5 rounded-full bg-primary/40"
@@ -82,7 +82,15 @@ function About() {
   }, /*#__PURE__*/React.createElement("span", {
     className: "ab-nudge__gem",
     "aria-hidden": "true"
-  }, "\u25C6"), "Watch the film for the full walkthrough \u2014 how we work, and exactly what it costs.")), /*#__PURE__*/React.createElement("div", {
+  }, "\u25C6"), "Watch the film for the full walkthrough \u2014 how we work, and exactly what it costs."), /*#__PURE__*/React.createElement("div", {
+    className: "hero-cta mt-8"
+  }, /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "hero-cta__go",
+    "data-lead": ""
+  }, /*#__PURE__*/React.createElement("span", null, "Tell us what you need"), /*#__PURE__*/React.createElement(ArrowRight, {
+    size: 16
+  })))), /*#__PURE__*/React.createElement("div", {
     className: "ab-media"
   }, /*#__PURE__*/React.createElement("div", {
     className: "ab-watch"

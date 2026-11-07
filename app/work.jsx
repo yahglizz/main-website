@@ -26,9 +26,9 @@ const PREVIEW_TRACKS = [
     tag: '01',
     blurb: 'Sites built to turn visitors into booked jobs — each one live in under a week.',
     slots: [
-      { id: 'barbershop', title: 'Barbershop Brand & Booking', stat: '2× Online Bookings', icon: '✂', src: 'more%20previews/barbershop.mov' },
-      { id: 'childcare', title: 'Childcare Center', stat: '3× Inquiry Volume', icon: '☀', src: 'more%20previews/childcare.mov' },
-      { id: 'rental', title: 'Short-Term Rental', stat: '+85% Direct Bookings', icon: '⌂', src: 'more%20previews/rental.mov' },
+      { id: 'barbershop', title: 'Barbershop Brand & Booking', stat: '2× Online Bookings', icon: '✂', src: 'assets/work/barbershop.mp4', poster: 'assets/work/barbershop.jpg' },
+      { id: 'childcare', title: 'Childcare Center', stat: '3× Inquiry Volume', icon: '☀', src: 'assets/work/childcare.mp4', poster: 'assets/work/childcare.jpg' },
+      { id: 'rental', title: 'Short-Term Rental', stat: '+85% Direct Bookings', icon: '⌂', src: 'assets/work/rental.mp4', poster: 'assets/work/rental.jpg' },
       { id: 'forge-quest', title: 'Bonus Game Preview', stat: 'Featured Game Demo', icon: '▣', game: true },
     ],
   },
@@ -38,10 +38,10 @@ const PREVIEW_TRACKS = [
     tag: '02',
     blurb: 'The systems behind the site — follow-up, booking, dispatch and reviews, running without you.',
     slots: [
-      { id: 'followup', title: 'AI Follow-Up for Realtors', stat: 'Reply time: 9.2 hrs → 47 s', icon: '⚡', src: 'assets/reels/followup.mp4' },
-      { id: 'medspa', title: 'Med Spa Booking Funnel', stat: '48% Booking Conversion', icon: '✚', src: 'assets/reels/medspa.mp4' },
-      { id: 'dispatch', title: 'Home Services Dispatch', stat: '14 hrs/week Saved', icon: '🔧', src: 'assets/reels/dispatch.mp4' },
-      { id: 'dashboard', title: 'Client Ops Dashboard', stat: '30 Agents Onboarded', icon: '▦', src: 'assets/reels/dashboard.mp4' },
+      { id: 'followup', title: 'AI Lead Follow-Up', stat: 'Live demo on a call', icon: '⚡', live: 'Watch new leads get a reply in seconds' },
+      { id: 'medspa', title: 'Booking Funnel', stat: 'Live demo on a call', icon: '✚', live: 'See a booking flow fill a calendar' },
+      { id: 'dispatch', title: 'Job Dispatch & Reminders', stat: 'Live demo on a call', icon: '🔧', live: 'See jobs routed and reminders sent' },
+      { id: 'dashboard', title: 'Owner Dashboard', stat: 'Live demo on a call', icon: '▦', live: 'Walk through a live pipeline' },
     ],
   },
 ];
@@ -442,7 +442,8 @@ function PreviewCard({ slot, i }) {
   const toggle = () => {
     const v = videoRef.current;
     if (!v || broken) return;
-    if (v.paused) v.play().then(() => setPlaying(true)).catch(() => setBroken(true));
+    // Hover may already be previewing it; a click means "play" until clicked again.
+    if (!playing) v.play().then(() => setPlaying(true)).catch(() => setBroken(true));
     else { v.pause(); setPlaying(false); }
   };
 
@@ -462,6 +463,15 @@ function PreviewCard({ slot, i }) {
             <img src="assets/game/forge-laptop-base.png" className="pv-laptop__base" alt="" draggable="false" />
           </div>
         </div>
+      ) : slot.live ? (
+        <button type="button" className="pv-frame pv-frame--live" data-lead="AI Automation">
+          <span className="pv-live">
+            <span className="pv-live__icon" aria-hidden="true">{slot.icon}</span>
+            <span className="pv-live__line">{slot.live}</span>
+            <span className="pv-live__cta">Book a live demo →</span>
+          </span>
+          <span className="reel__scan" aria-hidden="true" />
+        </button>
       ) : (
         <button
           type="button"
@@ -481,6 +491,7 @@ function PreviewCard({ slot, i }) {
               ref={videoRef}
               className="pv-frame__video"
               src={slot.src}
+              poster={slot.poster}
               muted
               loop
               playsInline
@@ -514,7 +525,7 @@ function Work() {
   const active = PREVIEW_TRACKS.find(t => t.id === track) || PREVIEW_TRACKS[0];
 
   return (
-    <section id="work" data-screen-label="03 Work" className="relative bg-black py-24 md:py-32">
+    <section id="work" data-screen-label="03 Work" className="relative bg-black py-16 md:py-32">
       <div className="absolute inset-0 bg-noise opacity-70 pointer-events-none" />
 
       <div className="relative max-w-6xl mx-auto px-5 sm:px-8">

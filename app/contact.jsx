@@ -90,7 +90,7 @@ function Contact() {
   const fieldCls = 'field w-full rounded-xl px-4 py-3 text-sm placeholder-primary/35';
 
   return (
-    <section id="contact" data-screen-label="05 Contact" className="relative bg-black pt-24 md:pt-32 pb-16">
+    <section id="contact" data-screen-label="05 Contact" className="relative bg-black py-16 md:py-32">
       <div className="max-w-7xl mx-auto px-5 sm:px-8">
         <div className="flex items-center gap-3 text-[10px] md:text-xs uppercase tracking-[0.3em] text-primary/55 mb-10 md:mb-14">
           <span className="inline-block w-6 h-px bg-primary/30" />
@@ -243,8 +243,8 @@ function Contact() {
 
                       <div className="sm:col-span-2">
                         <Field label="What do you need help with?" required>
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                            {['Website', 'AI Automation', 'Custom App', 'Not sure'].map((opt) => (
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                            {['Website', 'Ads', 'AI Automation', 'Full System', 'Custom App', 'Not sure'].map((opt) => (
                               <button
                                 key={opt}
                                 type="button"
@@ -315,8 +315,18 @@ function Contact() {
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="mt-20 md:mt-28 pt-8 border-t border-white/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs text-primary/45">
+      </div>
+    </section>
+  );
+}
+
+/* Its own component (not inside Contact) so the FAQ can sit between the form
+   and the footer: hero.js slots #faq in front of #site-footer. */
+function SiteFooter() {
+  return (
+    <footer id="site-footer" className="relative bg-black pb-16">
+      <div className="max-w-7xl mx-auto px-5 sm:px-8">
+        <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs text-primary/45">
           <div className="flex items-center gap-2">
             <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary" />
             <span className="font-bold text-primary/80">ClientForge</span>
@@ -327,18 +337,18 @@ function Contact() {
               href="https://www.instagram.com/forgelabsx/"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 hover:text-ink transition-colors"
+              className="flex items-center gap-1.5 py-2 hover:text-ink transition-colors"
             >
               <Instagram size={13} />
               <span>@forgelabsx</span>
             </a>
-            <a href="#home" className="hover:text-ink transition-colors">Back to top ↑</a>
+            <a href="#top" className="py-2 hover:text-ink transition-colors">Back to top ↑</a>
             <span>© {new Date().getFullYear()} ClientForge</span>
           </div>
         </div>
       </div>
-    </section>
+    </footer>
   );
 }
 
-Object.assign(window, { Contact });
+Object.assign(window, { Contact, SiteFooter });
